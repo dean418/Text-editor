@@ -1,72 +1,59 @@
-const editor = require('./editor');
-
 class Keypress {
-	static enter() {
-		let focusedLine = editor.addline();
+	constructor(editor) {
+		this.editor = editor;
+	}
+
+	enter() {
+		let focusedLine = this.editor.addLine();
 		return focusedLine;
 	}
 
-	static backspace(focusedLine) {
-		/* if there's no char and the line num != 1, delete line*/
-		if (focusedLine.innerText == "" && focusedLine.parentElement.id != 1) {
+	backspace(focusedLine) {
+		// if no char and the line num != 1, delete line
+		if (focusedLine.innerHTML == "" && focusedLine.parentElement.id != 1) {
+			let currentLine = focusedLine.parentElement;
+			let currentLineId = parseInt(currentLine.id);
+			let previousLine = currentLineId - 2; // 1 for prev line, 1 for array index
+
+			currentLine.remove(); // remove from DOM
+			focusedLine = this.editor.lines[previousLine].childNodes[1];
 			
-			let currentLine = focusedLine.parentElement.id;
-			currentLine = Number(currentLine);
-
-			let previousLine = currentLine - 1;
-			previousLine = previousLine.toString();
-
-			focusedLine.parentElement.parentElement.removeChild(focusedLine.parentElement);
-
-			focusedLine = document.getElementById(previousLine);
-			focusedLine = focusedLine.getElementsByClassName("rowContent")[0];
+			this.editor.lines.splice(currentLineId - 1, 1); // remove from array
+			this.editor.sortLineNumbers();
+			
 			return focusedLine;
 		}
 		// remove last character
 		else {
-			let string = focusedLine.innerText;
+			let string = focusedLine.innerHTML;
 			// if last character is a space
 			if (string.substr(string.length -5) == "nbsp;") {
 				string = string.replace(/&nbsp;+$/, '');
 			} else {
 				string = string.substr(0, string.length - 1)
 			}
-			focusedLine.innerText = string;
+			focusedLine.innerHTML = string;
 			return focusedLine;
 		}
 	}
 
-	static upArrow(focusedLine) {
+	upArrow(focusedLine) {
 		let lineNum = focusedLine.parentElement.id;
-		let rowContent = focusedLine;
-
 		if (lineNum !== "1") {
 			let prevLine = lineNum - 1;
-			let prevLineId = prevLine.toString();
-			focusedLine = document.getElementById(prevLineId);
-
-			//if previous line is the first (hardcoded) get a different index
-			if(prevLine != 1) {
-				rowContent = focusedLine.childNodes[1];
-			} else {
-				rowContent = focusedLine.childNodes[3];
-			}
+			focusedLine = editor.lines[prevLine-1].childNodes[1]
 		}
-		return rowContent;
+		return focusedLine;
 	}
 
-	static downArrow() {
+	downArrow(focusedLine) {
 		let lineNum = focusedLine.parentElement.id;
-		let rowContent = focusedLine;
 
 		// if not last line
-		if (lineNum != document.getElementById("editorContainer").childElementCount) {
-			let nextLine = new Number(lineNum) + 1;
-			let nextLineId = nextLine.toString()
-			let line = document.getElementById(nextLineId);
-			rowContent = line.childNodes[1];
+		if (lineNum != editor.container.childElementCount) { 
+			focusedLine = editor.lines[lineNum].childNodes[1];
 		}
-		return rowContent;
+		return focusedLine;
 	}
 }
 

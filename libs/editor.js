@@ -1,52 +1,66 @@
 class Editor {
-	static addline() {
+	constructor(container) {
+		this.lines = []; // store lines to allow for different editors 
+		this.container = container;
+	}
+
+	addLine(start) {
 		// create elements for editor line
-		let container = document.getElementById("editorContainer");
 		let line = document.createElement("div");
 		let rowContent = document.createElement("div");
 		let rowNum = document.createElement("div");
 
 		// assign classes to editor line
-		line.className += "line";
-		rowContent.className += "rowContent";
-		rowNum.className += "rowNum";
+		line.classList.add("line");
+		line.id = 1;
+		rowNum.classList.add("rowNum");
+		rowContent.classList.add("rowContent");
 	
+		if(start === "firstLine") {
+			rowContent.classList.add("focused");
+		}
+
 		// construct line
 		line.appendChild(rowNum);
 		line.appendChild(rowContent);
-		container.appendChild(line);
+		this.container.appendChild(line);
+
+		// add line to list of lines
+		this.lines.push(line);
 	
 		// add line numbers
-		this.addLineNumber();
+		this.sortLineNumbers();
 
 		return line.childNodes[1];
 	}
 
-	static addLineNumber() {
-		let lines = document.getElementById("editorContainer").querySelectorAll(".line");
+	sortLineNumbers() {
 		let lineNumber = 1;
 	
-		for(let line of lines) {
+		for(let line of this.lines) {
 			line.id = lineNumber;
-			line.getElementsByClassName("rowNum")[0].innerText = lineNumber;
+			line.childNodes[0].innerHTML = lineNumber;
 			lineNumber += 1;
 		}
+		lineNumber = 1;
+		console.log("done")
 	}
 
-	static updatePos(focusedLine, counter) {
-		let lineText = focusedLine.innerText;
+	updatePosition(focusedLine, counter) {
+		let lineText = focusedLine.innerText;	
+		
 		let leftLinePos = lineText.substring(0, lineText.length - counter);
 		let rightLinePos = lineText.substring(lineText.length - counter, lineText.length);	
-		console.log("left: " + leftLinePos);
-		console.log("right: " + rightLinePos);
+
 		return {
 			left: leftLinePos,
 			right: rightLinePos
 		}
 	}
 
-	static updateLine() {
-		
+	updateLine(focusedLineCpy, focusedLine) {
+		focusedLine.classList.add("focused");
+		focusedLineCpy.classList.remove("focused");
 	}
 }
 

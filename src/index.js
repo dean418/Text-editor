@@ -1,10 +1,18 @@
 const Keypress = require('./libs/keypress');
 const Editor = require('./libs/editor');
-let focusedLine = document.getElementById("1");
-focusedLine = focusedLine.getElementsByClassName("rowContent")[0];
 
-let linePos;
+let container = document.getElementById("editorContainer");
+
+const editor = new Editor(container);
+const keypress = new Keypress(editor);
+
+editor.addLine("firstLine");
+
+let focusedLine = document.getElementById("1").childNodes[1];
+
+let linePosition;
 let counter = 0;
+let focusedLineCpy = focusedLine;
 
 document.addEventListener('keydown', event => {
 	let key = event.key;
@@ -29,51 +37,55 @@ document.addEventListener('keydown', event => {
 			break;
 
 		case "Enter":
-			focusedLine = Keypress.enter();
+			focusedLine = keypress.enter();
 			counter = 0;
-			linePos = Editor.updatePos(focusedLine, counter);
 			break;
 
 		case "Backspace":
-			focusedLine = Keypress.backspace(focusedLine);
-			linePos = Editor.updatePos(focusedLine, counter)
+			focusedLine = keypress.backspace(focusedLine);
 			break;
 
 		case "Tab":
-			focusedLine.innerText += "&nbsp&nbsp&nbsp&nbsp";
+			focusedLine.innerHTML += "&nbsp&nbsp&nbsp&nbsp";
 			break;
 
 		case " ":
-			focusedLine.innerText += "&nbsp";
+			focusedLine.innerHTML += "&nbsp";
 			break;
 
 			// arrows
 		case "ArrowUp":
-			focusedLine = Keypress.upArrow(focusedLine);
-			linePos = Editor.updatePos(focusedLine, counter)
+			focusedLine = keypress.upArrow(focusedLine);
 			break;
 
 		case "ArrowDown":
-			focusedLine = Keypress.downArrow(focusedLine);
-			linePos = Editor.updatePos(focusedLine, counter);
+			focusedLine = keypress.downArrow(focusedLine);
 			break;
 
 		case "ArrowLeft":
 			counter++;
-			linePos = Editor.updatePos(focusedLine, counter);
 			break;
 
 		case "ArrowRight":
 			counter--;
-			linePos = Editor.updatePos(focusedLine, counter)
 			break;
 
 		default:
-			if (typeof (linePos) != "undefined") {
-				focusedLine.innerText = linePos.left + event.key + linePos.right;
-				linePos = Editor.updatePos(focusedLine, counter);
+			if (typeof(linePosition) != "undefined") {
+				focusedLine.innerHTML = linePosition.left + event.key + linePosition.right;
 			} else {
-				focusedLine.innerText += event.key;
+				focusedLine.innerHTML += event.key;
 			}
 	}
+
+		linePosition = editor.updatePosition(focusedLine, counter)
+
+	
+
+	if(focusedLineCpy.parentElement.id != focusedLine.parentElement.id) {
+		editor.updateLine(focusedLineCpy, focusedLine);
+		focusedLineCpy = focusedLine;
+	}
 });
+
+module.exports = editor;
