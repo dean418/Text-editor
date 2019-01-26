@@ -3,8 +3,8 @@ class Keypress {
 		this.editor = editor;
 	}
 
-	enter() {
-		let focusedLine = this.editor.addLine();
+	enter(focusedLine) {
+		focusedLine = this.editor.addLine(null, focusedLine);
 		return focusedLine;
 	}
 
@@ -17,17 +17,17 @@ class Keypress {
 
 			currentLine.remove(); // remove from DOM
 			focusedLine = this.editor.lines[previousLine].childNodes[1];
-			
+
 			this.editor.lines.splice(currentLineId - 1, 1); // remove from array
 			this.editor.sortLineNumbers();
-			
+
 			return focusedLine;
 		}
 		// remove last character
 		else {
 			let string = focusedLine.innerHTML;
 			// if last character is a space
-			if (string.substr(string.length -5) == "nbsp;") {
+			if (string.substr(string.length - 5) == "nbsp;") {
 				string = string.replace(/&nbsp;+$/, '');
 			} else {
 				string = string.substr(0, string.length - 1)
@@ -41,7 +41,7 @@ class Keypress {
 		let lineNum = focusedLine.parentElement.id;
 		if (lineNum !== "1") {
 			let prevLine = lineNum - 1;
-			focusedLine = editor.lines[prevLine-1].childNodes[1]
+			focusedLine = editor.lines[prevLine - 1].childNodes[1]
 		}
 		return focusedLine;
 	}
@@ -50,7 +50,7 @@ class Keypress {
 		let lineNum = focusedLine.parentElement.id;
 
 		// if not last line
-		if (lineNum != editor.container.childElementCount) { 
+		if (lineNum != editor.container.childElementCount) {
 			focusedLine = editor.lines[lineNum].childNodes[1];
 		}
 		return focusedLine;

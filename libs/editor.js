@@ -4,7 +4,7 @@ class Editor {
 		this.container = container;
 	}
 
-	addLine(start) {
+	addLine(start, focusedLine) {
 		// create elements for editor line
 		let line = document.createElement("div");
 		let rowContent = document.createElement("div");
@@ -15,19 +15,22 @@ class Editor {
 		line.id = 1;
 		rowNum.classList.add("rowNum");
 		rowContent.classList.add("rowContent");
-	
-		if(start === "firstLine") {
-			rowContent.classList.add("focused");
-		}
 
 		// construct line
 		line.appendChild(rowNum);
 		line.appendChild(rowContent);
-		this.container.appendChild(line);
 
-		// add line to list of lines
-		this.lines.push(line);
-	
+		if (start === "firstLine") {
+			rowContent.classList.add("focused");
+			this.container.appendChild(line);
+			this.lines.push(line);
+		} else {
+			let nextLineId = parseInt(focusedLine.parentElement.id);
+
+			this.container.insertBefore(line, this.lines[nextLineId]); //new line, next line
+			this.lines.splice(nextLineId, 0, line);
+		}
+
 		// add line numbers
 		this.sortLineNumbers();
 
@@ -36,21 +39,20 @@ class Editor {
 
 	sortLineNumbers() {
 		let lineNumber = 1;
-	
-		for(let line of this.lines) {
+
+		for (let line of this.lines) {
 			line.id = lineNumber;
 			line.childNodes[0].innerHTML = lineNumber;
 			lineNumber += 1;
 		}
 		lineNumber = 1;
-		console.log("done")
 	}
 
 	updatePosition(focusedLine, counter) {
-		let lineText = focusedLine.innerText;	
-		
+		let lineText = focusedLine.innerText;
+
 		let leftLinePos = lineText.substring(0, lineText.length - counter);
-		let rightLinePos = lineText.substring(lineText.length - counter, lineText.length);	
+		let rightLinePos = lineText.substring(lineText.length - counter, lineText.length);
 
 		return {
 			left: leftLinePos,

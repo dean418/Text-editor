@@ -37,7 +37,7 @@ document.addEventListener('keydown', event => {
 			break;
 
 		case "Enter":
-			focusedLine = keypress.enter();
+			focusedLine = keypress.enter(focusedLine);
 			counter = 0;
 			break;
 
@@ -71,18 +71,16 @@ document.addEventListener('keydown', event => {
 			break;
 
 		default:
-			if (typeof(linePosition) != "undefined") {
+			if (typeof (linePosition) != "undefined") {
 				focusedLine.innerHTML = linePosition.left + event.key + linePosition.right;
 			} else {
 				focusedLine.innerHTML += event.key;
 			}
 	}
 
-		linePosition = editor.updatePosition(focusedLine, counter)
+	linePosition = editor.updatePosition(focusedLine, counter)
 
-	
-
-	if(focusedLineCpy.parentElement.id != focusedLine.parentElement.id) {
+	if (focusedLineCpy.parentElement.id != focusedLine.parentElement.id) {
 		editor.updateLine(focusedLineCpy, focusedLine);
 		focusedLineCpy = focusedLine;
 	}
