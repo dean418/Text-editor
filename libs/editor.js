@@ -2,6 +2,7 @@ class Editor {
 	constructor(container) {
 		this.lines = []; // store lines to allow for different editors 
 		this.container = container;
+		this.cursor;
 	}
 
 	addLine(start, focusedLine) {
@@ -48,11 +49,28 @@ class Editor {
 		lineNumber = 1;
 	}
 
-	updatePosition(focusedLine, counter) {
-		let lineText = focusedLine.innerText;
+	createCursor(focusedLine) {
+		let cursor = document.createElement("span");
 
+		cursor.classList.add("cursor");
+		this.cursor = cursor;
+		focusedLine.innerHTML+=cursor.outerHTML;
+	}
+
+	addCursor(focusedLine, linePosition) {
+		console.log(linePosition)
+		focusedLine.innerHTML = linePosition.left;
+		focusedLine.innerHTML += editor.cursor.outerHTML;
+		focusedLine.innerHTML +=  linePosition.right;
+	}
+
+	updatePosition(focusedLine, counter) {
+		let lineText = focusedLine.textContent;
 		let leftLinePos = lineText.substring(0, lineText.length - counter);
 		let rightLinePos = lineText.substring(lineText.length - counter, lineText.length);
+
+		leftLinePos = leftLinePos.replace(/(\r\n|\n|\r|u21b5)/gm, "");
+		rightLinePos = rightLinePos.replace(/(\r\n|\n|\r|u21b5)/gm, "");
 
 		return {
 			left: leftLinePos,

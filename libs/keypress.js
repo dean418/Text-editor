@@ -9,32 +9,42 @@ class Keypress {
 	}
 
 	backspace(focusedLine) {
+		console.log(focusedLine)
 		// if no char and the line num != 1, delete line
 		if (focusedLine.innerHTML == "" && focusedLine.parentElement.id != 1) {
-			let currentLine = focusedLine.parentElement;
-			let currentLineId = parseInt(currentLine.id);
-			let previousLine = currentLineId - 2; // 1 for prev line, 1 for array index
-
-			currentLine.remove(); // remove from DOM
-			focusedLine = this.editor.lines[previousLine].childNodes[1];
-
-			this.editor.lines.splice(currentLineId - 1, 1); // remove from array
-			this.editor.sortLineNumbers();
-
-			return focusedLine;
+			return this.removeLine(focusedLine);
 		}
 		// remove last character
 		else {
-			let string = focusedLine.innerHTML;
-			// if last character is a space
-			if (string.substr(string.length - 5) == "nbsp;") {
-				string = string.replace(/&nbsp;+$/, '');
-			} else {
-				string = string.substr(0, string.length - 1)
-			}
-			focusedLine.innerHTML = string;
+			let lineContent = focusedLine.innerText;
+
+			focusedLine.innerText = this.removeLastChar(lineContent);
 			return focusedLine;
 		}
+	}
+
+	removeLine(focusedLine) {
+		let currentLine = focusedLine.parentElement;
+		let currentLineId = parseInt(currentLine.id);
+		let previousLine = currentLineId - 2; // 1 for prev line, 1 for array index
+
+		currentLine.remove(); // remove from DOM
+		focusedLine = this.editor.lines[previousLine].childNodes[1];
+
+		this.editor.lines.splice(currentLineId - 1, 1); // remove from array
+		this.editor.sortLineNumbers();
+
+		return focusedLine
+	}
+
+	removeLastChar(lineContent) {
+		// if last character is a space
+		if (lineContent.substr(lineContent.length - 5) == "nbsp;") {
+			lineContent = lineContent.replace(/&nbsp;+$/, '');
+		} else {
+			lineContent = lineContent.substr(0, lineContent.length - 1)
+		}
+		return lineContent
 	}
 
 	upArrow(focusedLine) {
@@ -55,6 +65,8 @@ class Keypress {
 		}
 		return focusedLine;
 	}
+
+
 }
 
 module.exports = Keypress;

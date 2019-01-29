@@ -10,11 +10,13 @@ editor.addLine("firstLine");
 
 let focusedLine = document.getElementById("1").childNodes[1];
 
+editor.createCursor(focusedLine);
+
 let linePosition;
 let counter = 0;
 let focusedLineCpy = focusedLine;
 
-document.addEventListener('keydown', event => {
+document.addEventListener('keydown', (event) => {
 	let key = event.key;
 	switch (key) {
 		case "Shift":
@@ -43,6 +45,8 @@ document.addEventListener('keydown', event => {
 
 		case "Backspace":
 			focusedLine = keypress.backspace(focusedLine);
+			linePosition = editor.updatePosition(focusedLine, counter)
+			editor.addCursor(focusedLine);
 			break;
 
 		case "Tab":
@@ -63,18 +67,30 @@ document.addEventListener('keydown', event => {
 			break;
 
 		case "ArrowLeft":
-			counter++;
+			if(counter < focusedLine.textContent.length) {
+				counter++;
+				linePosition = editor.updatePosition(focusedLine, counter)
+				editor.addCursor(focusedLine, linePosition);
+			}
 			break;
 
 		case "ArrowRight":
-			counter--;
+			if(counter !== -1) {
+				counter--;
+				linePosition = editor.updatePosition(focusedLine, counter)
+				editor.addCursor(focusedLine, linePosition);
+			}
 			break;
 
 		default:
 			if (typeof (linePosition) != "undefined") {
-				focusedLine.innerHTML = linePosition.left + event.key + linePosition.right;
+				focusedLine.innerHTML = linePosition.left + event.key;
+				focusedLine.innerHTML += editor.cursor.outerHTML;
+				focusedLine.innerHTML +=  linePosition.right;
+
 			} else {
-				focusedLine.innerHTML += event.key;
+				focusedLine.innerHTML = event.key;
+				focusedLine.innerHTML += editor.cursor.outerHTML;
 			}
 	}
 
