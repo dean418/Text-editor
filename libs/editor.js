@@ -52,16 +52,34 @@ class Editor {
 	createCursor(focusedLine) {
 		let cursor = document.createElement("span");
 
-		cursor.classList.add("cursor");
+		cursor.id = "cursor";
 		this.cursor = cursor;
 		focusedLine.innerHTML+=cursor.outerHTML;
 	}
 
 	addCursor(focusedLine, linePosition) {
-		console.log(linePosition)
 		focusedLine.innerHTML = linePosition.left;
 		focusedLine.innerHTML += editor.cursor.outerHTML;
 		focusedLine.innerHTML +=  linePosition.right;
+	}
+
+	removePrevLineCursor(focusedLine, direction) {
+		let currentLine = focusedLine.parentElement;
+		let currentLineId = parseInt(currentLine.id);
+		let previousLine = 0;
+
+		if(direction === "up") {
+			previousLine = currentLineId;
+		} else if(direction === "down") {
+			previousLine = currentLineId - 2;
+		}
+
+		let prevLineNodes = this.lines[previousLine].childNodes[1].childNodes //[0].id
+		for (let i=0; i < prevLineNodes.length; i++) {
+			if(prevLineNodes[i].tagName !== undefined && prevLineNodes[i].tagName.toLowerCase() == "span") {
+				prevLineNodes[i].remove()
+			}
+		}
 	}
 
 	updatePosition(focusedLine, counter) {

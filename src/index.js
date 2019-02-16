@@ -41,12 +41,15 @@ document.addEventListener('keydown', (event) => {
 		case "Enter":
 			focusedLine = keypress.enter(focusedLine);
 			counter = 0;
+			editor.removePrevLineCursor(focusedLine, "down");
+			linePosition = editor.updatePosition(focusedLine, counter);
+			editor.addCursor(focusedLine, linePosition);
 			break;
 
 		case "Backspace":
-			focusedLine = keypress.backspace(focusedLine);
+			focusedLine = keypress.backspace(focusedLine, linePosition);
 			linePosition = editor.updatePosition(focusedLine, counter)
-			editor.addCursor(focusedLine);
+			editor.addCursor(focusedLine, linePosition);
 			break;
 
 		case "Tab":
@@ -60,10 +63,16 @@ document.addEventListener('keydown', (event) => {
 			// arrows
 		case "ArrowUp":
 			focusedLine = keypress.upArrow(focusedLine);
+			editor.removePrevLineCursor(focusedLine, "up");
+			linePosition = editor.updatePosition(focusedLine, counter);
+			editor.addCursor(focusedLine, linePosition);
 			break;
 
 		case "ArrowDown":
 			focusedLine = keypress.downArrow(focusedLine);
+			editor.removePrevLineCursor(focusedLine, "down");
+			linePosition = editor.updatePosition(focusedLine, counter);
+			editor.addCursor(focusedLine, linePosition);
 			break;
 
 		case "ArrowLeft":

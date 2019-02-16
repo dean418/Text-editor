@@ -8,8 +8,7 @@ class Keypress {
 		return focusedLine;
 	}
 
-	backspace(focusedLine) {
-		console.log(focusedLine)
+	backspace(focusedLine, linePosition) {
 		// if no char and the line num != 1, delete line
 		if (focusedLine.innerHTML == "" && focusedLine.parentElement.id != 1) {
 			return this.removeLine(focusedLine);
@@ -18,7 +17,7 @@ class Keypress {
 		else {
 			let lineContent = focusedLine.innerText;
 
-			focusedLine.innerText = this.removeLastChar(lineContent);
+			focusedLine.textContent = this.removeLastChar(lineContent, linePosition);
 			return focusedLine;
 		}
 	}
@@ -35,15 +34,15 @@ class Keypress {
 		this.editor.sortLineNumbers();
 
 		return focusedLine
-	}
+	} 
 
-	removeLastChar(lineContent) {
-		// if last character is a space
-		if (lineContent.substr(lineContent.length - 5) == "nbsp;") {
-			lineContent = lineContent.replace(/&nbsp;+$/, '');
-		} else {
-			lineContent = lineContent.substr(0, lineContent.length - 1)
-		}
+	removeLastChar(lineContent, linePosition) {
+			if(linePosition.right.length == 0) {
+				lineContent = lineContent.substr(0, lineContent.length - 2)
+			} else {
+				lineContent = linePosition.left.substr(0, linePosition.left.length-1) + linePosition.right;
+			}
+
 		return lineContent
 	}
 
@@ -63,6 +62,7 @@ class Keypress {
 		if (lineNum != editor.container.childElementCount) {
 			focusedLine = editor.lines[lineNum].childNodes[1];
 		}
+
 		return focusedLine;
 	}
 
