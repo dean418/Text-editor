@@ -1,22 +1,18 @@
 class Keypress {
-	constructor(editor) {
+	constructor(line, editor) {
+		this.line = line;
 		this.editor = editor;
-	}
-
-	enter(focusedLine) {
-		focusedLine = this.editor.addLine(null, focusedLine);
-		return focusedLine;
 	}
 
 	backspace(focusedLine, linePosition) {
 		// if no char and the line num != 1, delete line
-		if (focusedLine.innerHTML == "" && focusedLine.parentElement.id != 1) {
+		if (focusedLine.innerText == "" && focusedLine.parentElement.id != 1) {
 			return this.removeLine(focusedLine);
 		}
 		// remove last character
 		else {
 			let lineContent = focusedLine.innerText;
-
+			
 			focusedLine.textContent = this.removeLastChar(lineContent, linePosition);
 			return focusedLine;
 		}
@@ -26,15 +22,14 @@ class Keypress {
 		let currentLine = focusedLine.parentElement;
 		let currentLineId = parseInt(currentLine.id);
 		let previousLine = currentLineId - 2; // 1 for prev line, 1 for array index
-
 		currentLine.remove(); // remove from DOM
-		focusedLine = this.editor.lines[previousLine].childNodes[1];
+		focusedLine = this.line.lines[previousLine].childNodes[1];
 
-		this.editor.lines.splice(currentLineId - 1, 1); // remove from array
-		this.editor.sortLineNumbers();
+		this.line.lines.splice(currentLineId - 1, 1); // remove from array
+		this.line.sortLineNumbers();
 
 		return focusedLine
-	} 
+	}
 
 	removeLastChar(lineContent, linePosition) {
 			if(linePosition.right.length == 0) {
@@ -50,7 +45,7 @@ class Keypress {
 		let lineNum = focusedLine.parentElement.id;
 		if (lineNum !== "1") {
 			let prevLine = lineNum - 1;
-			focusedLine = editor.lines[prevLine - 1].childNodes[1]
+			focusedLine = line.lines[prevLine - 1].childNodes[1]
 		}
 		return focusedLine;
 	}
@@ -60,13 +55,11 @@ class Keypress {
 
 		// if not last line
 		if (lineNum != editor.container.childElementCount) {
-			focusedLine = editor.lines[lineNum].childNodes[1];
+			focusedLine = line.lines[lineNum].childNodes[1];
 		}
 
 		return focusedLine;
 	}
-
-
 }
 
 module.exports = Keypress;

@@ -1,20 +1,40 @@
 const Keypress = require('./libs/keypress');
 const Editor = require('./libs/editor');
+const Line = require('./libs/line');
+const Cursor = require('./libs/cursor')
 
 let container = document.getElementById("editorContainer");
 
 const editor = new Editor(container);
-const keypress = new Keypress(editor);
+const line = new Line();
+const cursor = new Cursor(line.lines);
+const keypress = new Keypress(line, editor);
 
-editor.addLine("firstLine");
+line.addLine(null, true);
 
 let focusedLine = document.getElementById("1").childNodes[1];
 
-editor.createCursor(focusedLine);
+cursor.createCursor(focusedLine);
 
-let linePosition;
 let counter = 0;
+let linePosition = editor.updatePosition(focusedLine, counter);
 let focusedLineCpy = focusedLine;
+
+function handleSpace() {
+	linePosition = editor.updatePosition(focusedLine, counter)
+	cursor.addCursor(focusedLine, linePosition);
+}
+
+function handleArrowUpDown(focusedLine, direction) {
+	cursor.removePrevLineCursor(focusedLine, direction);
+	linePosition = editor.updatePosition(focusedLine, counter);
+	cursor.addCursor(focusedLine, linePosition);
+}
+
+function handleArrowLeftRight() {
+	linePosition = editor.updatePosition(focusedLine, counter)
+	cursor.addCursor(focusedLine, linePosition);
+}
 
 document.addEventListener('keydown', (event) => {
 	let key = event.key;
@@ -39,74 +59,70 @@ document.addEventListener('keydown', (event) => {
 			break;
 
 		case "Enter":
-			focusedLine = keypress.enter(focusedLine);
+			focusedLine = line.addLine(focusedLine);
 			counter = 0;
-			editor.removePrevLineCursor(focusedLine, "down");
+			cursor.removePrevLineCursor(focusedLine, "down");
 			linePosition = editor.updatePosition(focusedLine, counter);
-			editor.addCursor(focusedLine, linePosition);
+			cursor.addCursor(focusedLine, linePosition);
 			break;
 
 		case "Backspace":
 			focusedLine = keypress.backspace(focusedLine, linePosition);
 			linePosition = editor.updatePosition(focusedLine, counter)
-			editor.addCursor(focusedLine, linePosition);
+			cursor.addCursor(focusedLine, linePosition);
 			break;
 
 		case "Tab":
 			focusedLine.innerHTML += "&nbsp&nbsp&nbsp&nbsp";
+			handleSpace();
 			break;
 
 		case " ":
 			focusedLine.innerHTML += "&nbsp";
+			handleSpace()
 			break;
 
 			// arrows
 		case "ArrowUp":
 			focusedLine = keypress.upArrow(focusedLine);
-			editor.removePrevLineCursor(focusedLine, "up");
-			linePosition = editor.updatePosition(focusedLine, counter);
-			editor.addCursor(focusedLine, linePosition);
+			handleArrowUpDown(focusedLine, "up")
 			break;
 
 		case "ArrowDown":
 			focusedLine = keypress.downArrow(focusedLine);
-			editor.removePrevLineCursor(focusedLine, "down");
-			linePosition = editor.updatePosition(focusedLine, counter);
-			editor.addCursor(focusedLine, linePosition);
+			handleArrowUpDown(focusedLine, "down")
 			break;
 
 		case "ArrowLeft":
 			if(counter < focusedLine.textContent.length) {
 				counter++;
-				linePosition = editor.updatePosition(focusedLine, counter)
-				editor.addCursor(focusedLine, linePosition);
+				handleArrowLeftRight();
 			}
 			break;
 
 		case "ArrowRight":
 			if(counter !== -1) {
 				counter--;
-				linePosition = editor.updatePosition(focusedLine, counter)
-				editor.addCursor(focusedLine, linePosition);
+				handleArrowLeftRight();
 			}
 			break;
 
 		default:
 			if (typeof (linePosition) != "undefined") {
-				focusedLine.innerHTML = linePosition.left + event.key;
-				focusedLine.innerHTML += editor.cursor.outerHTML;
+				focusedLine.innerText = linePosition.left + event.key;
+				focusedLine.innerHTML += cursor.cursor.outerHTML;
 				focusedLine.innerHTML +=  linePosition.right;
 
 			} else {
-				focusedLine.innerHTML = event.key;
-				focusedLine.innerHTML += editor.cursor.outerHTML;
+				focusedLine.innerText = event.key;
+				focusedLine.innerHTML += cursor.cursor.outerHTML;
 			}
 	}
 
-	linePosition = editor.updatePosition(focusedLine, counter)
+	linePosition = editor.updatePosition(focusedLine, counter);
 
 	if (focusedLineCpy.parentElement.id != focusedLine.parentElement.id) {
-		editor.updateLine(focusedLineCpy, focusedLine);
+		line.updateLine(focusedLineCpy, focusedLine);
 		focusedLineCpy = focusedLine;
 	}
 });
