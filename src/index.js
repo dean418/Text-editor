@@ -72,25 +72,34 @@ document.addEventListener('keydown', (event) => {
 			cursor.addCursor(focusedLine, linePosition);
 			break;
 
+		case "Delete":
+			linePosition = keypress.delete(focusedLine, linePosition);
+			counter--;
+			linePosition = editor.updatePosition(focusedLine, counter);
+			cursor.addCursor(focusedLine, linePosition);
+			break;
+
 		case "Tab":
-			focusedLine.innerHTML += "&nbsp&nbsp&nbsp&nbsp";
-			handleSpace();
+			let tab = "&nbsp&nbsp&nbsp&nbsp";
+			focusedLine = keypress.addSpaces(focusedLine, linePosition, tab);
+			handleSpace();	
 			break;
 
 		case " ":
-			focusedLine.innerHTML += "&nbsp";
-			handleSpace()
+			space = "&nbsp";
+			focusedLine = keypress.addSpaces(focusedLine, linePosition, space);
+			handleSpace();			
 			break;
 
 			// arrows
 		case "ArrowUp":
 			focusedLine = keypress.upArrow(focusedLine);
-			handleArrowUpDown(focusedLine, "up")
+			handleArrowUpDown(focusedLine, "up");
 			break;
 
 		case "ArrowDown":
 			focusedLine = keypress.downArrow(focusedLine);
-			handleArrowUpDown(focusedLine, "down")
+			handleArrowUpDown(focusedLine, "down");
 			break;
 
 		case "ArrowLeft":

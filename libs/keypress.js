@@ -5,40 +5,45 @@ class Keypress {
 	}
 
 	backspace(focusedLine, linePosition) {
-		// if no char and the line num != 1, delete line
 		if (focusedLine.innerText == "" && focusedLine.parentElement.id != 1) {
 			return this.removeLine(focusedLine);
-		}
-		// remove last character
-		else {
-			let lineContent = focusedLine.innerText;
-			
-			focusedLine.textContent = this.removeLastChar(lineContent, linePosition);
+		} else {
+			focusedLine.textContent = linePosition.left.substr(0, linePosition.left.length - 1) + linePosition.right;
 			return focusedLine;
 		}
 	}
 
-	removeLine(focusedLine) {
-		let currentLine = focusedLine.parentElement;
-		let currentLineId = parseInt(currentLine.id);
-		let previousLine = currentLineId - 2; // 1 for prev line, 1 for array index
-		currentLine.remove(); // remove from DOM
-		focusedLine = this.line.lines[previousLine].childNodes[1];
+	delete(focusedLine, linePosition) {
+		if (focusedLine.innerText == "" && focusedLine.parentElement.id != line.lines.length) {
+			return this.removeLine(focusedLine, true);
+		} else {
+			linePosition.right = linePosition.right.substr(1, linePosition.right.length);
+			focusedLine.textContent = linePosition.left + linePosition.right;
 
-		this.line.lines.splice(currentLineId - 1, 1); // remove from array
-		this.line.sortLineNumbers();
-
-		return focusedLine
+			return {
+				left: linePosition.left,
+				right: linePosition.right
+			};
+		}
 	}
 
-	removeLastChar(lineContent, linePosition) {
-			if(linePosition.right.length == 0) {
-				lineContent = lineContent.substr(0, lineContent.length - 2)
-			} else {
-				lineContent = linePosition.left.substr(0, linePosition.left.length-1) + linePosition.right;
-			}
+	removeLine(focusedLine, del) {
+		let currentLine = focusedLine.parentElement;
+		let currentLineId = parseInt(currentLine.id);
 
-		return lineContent
+		if (del) {
+			let nextLine = currentLineId;
+			console.log(this.line.lines[nextLine])
+			this.line.lines[nextLine].remove();
+			this.line.lines.splice(nextLine, 1);
+		} else {
+			let previousLine = currentLineId - 2; // 1 for prev line, 1 for array index
+			currentLine.remove(); // remove from DOM
+			focusedLine = this.line.lines[previousLine].childNodes[1];
+			this.line.lines.splice(currentLineId - 1, 1); // remove from arrayw
+		}
+		this.line.sortLineNumbers();
+		return focusedLine
 	}
 
 	upArrow(focusedLine) {
@@ -59,6 +64,13 @@ class Keypress {
 		}
 
 		return focusedLine;
+	}
+
+	addSpaces(focusedLine, linePosition, space) {
+		focusedLine.innerText = linePosition.left;
+		focusedLine.innerHTML += space;
+		focusedLine.innerText += linePosition.right;
+		return focusedLine
 	}
 }
 
