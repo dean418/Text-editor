@@ -3,37 +3,37 @@ const Editor = require('./libs/editor');
 const Line = require('./libs/line');
 const Cursor = require('./libs/cursor')
 
-let container = document.getElementById("editorContainer");
+const editor = new Editor();
 
-const editor = new Editor(container);
-const line = new Line();
-const cursor = new Cursor(line.lines);
-const keypress = new Keypress(line, editor);
+let focusedLine = Line.addFirstLine(editor.container).childNodes[1];
 
-line.addLine(null, true);
+const line = new Line(focusedLine);
+const cursor = new Cursor();
+const keypress = new Keypress();
 
-let focusedLine = document.getElementById("1").childNodes[1];
 
-cursor.createCursor(focusedLine);
+cursor.createCursor(line.focusedLine);
+line.lines.push(line.focusedLine.parentElement);
+line.sortLineNumbers();
 
 let counter = 0;
-let linePosition = editor.updatePosition(focusedLine, counter);
-let focusedLineCpy = focusedLine;
+let linePosition = editor.updatePosition(line.focusedLine, counter);
+line.focusedLineCpy = line.focusedLine;
 
 function handleSpace() {
-	linePosition = editor.updatePosition(focusedLine, counter)
-	cursor.addCursor(focusedLine, linePosition);
+	linePosition = editor.updatePosition(line.focusedLine, counter)
+	cursor.addCursor(linePosition);
 }
 
-function handleArrowUpDown(focusedLine, direction) {
-	cursor.removePrevLineCursor(focusedLine, direction);
-	linePosition = editor.updatePosition(focusedLine, counter);
-	cursor.addCursor(focusedLine, linePosition);
+function handleArrowUpDown(direction) {
+	cursor.removePrevLineCursor(direction);
+	linePosition = editor.updatePosition(line.focusedLine, counter);
+	cursor.addCursor(linePosition);
 }
 
 function handleArrowLeftRight() {
-	linePosition = editor.updatePosition(focusedLine, counter)
-	cursor.addCursor(focusedLine, linePosition);
+	linePosition = editor.updatePosition(line.focusedLine, counter)
+	cursor.addCursor(linePosition);
 }
 
 document.addEventListener('keydown', (event) => {
@@ -55,55 +55,55 @@ document.addEventListener('keydown', (event) => {
 			break;
 
 		case "AltGraph":
-			event.preventDefault();
+			// event.preventDefault();
 			break;
 
 		case "Enter":
-			focusedLine = line.addLine(focusedLine);
+			line.focusedLine = line.addLine();
 			counter = 0;
-			cursor.removePrevLineCursor(focusedLine, "down");
-			linePosition = editor.updatePosition(focusedLine, counter);
-			cursor.addCursor(focusedLine, linePosition);
+			cursor.removePrevLineCursor("down");
+			linePosition = editor.updatePosition(line.focusedLine, counter);
+			cursor.addCursor(linePosition);
 			break;
 
 		case "Backspace":
-			focusedLine = keypress.backspace(focusedLine, linePosition);
-			linePosition = editor.updatePosition(focusedLine, counter)
-			cursor.addCursor(focusedLine, linePosition);
+			line.focusedLine = keypress.backspace(linePosition);
+			linePosition = editor.updatePosition(line.focusedLine, counter)
+			cursor.addCursor(linePosition);
 			break;
 
 		case "Delete":
-			linePosition = keypress.delete(focusedLine, linePosition);
+			linePosition = keypress.delete(linePosition);
 			counter--;
-			linePosition = editor.updatePosition(focusedLine, counter);
-			cursor.addCursor(focusedLine, linePosition);
+			linePosition = editor.updatePosition(line.focusedLine, counter);
+			cursor.addCursor(linePosition);
 			break;
 
 		case "Tab":
 			let tab = "&nbsp&nbsp&nbsp&nbsp";
-			focusedLine = keypress.addSpaces(focusedLine, linePosition, tab);
+			focusedLine = keypress.addSpaces(linePosition, tab);
 			handleSpace();	
 			break;
 
 		case " ":
 			space = "&nbsp";
-			focusedLine = keypress.addSpaces(focusedLine, linePosition, space);
+			focusedLine = keypress.addSpaces(linePosition, space);
 			handleSpace();			
 			break;
 
 			// arrows
 		case "ArrowUp":
-			focusedLine = keypress.upArrow(focusedLine);
-			handleArrowUpDown(focusedLine, "up");
+			keypress.upArrow();
+			handleArrowUpDown("up");
 			break;
 
 		case "ArrowDown":
-			focusedLine = keypress.downArrow(focusedLine);
-			handleArrowUpDown(focusedLine, "down");
+			keypress.downArrow();
+			handleArrowUpDown("down");
 			break;
 
 		case "ArrowLeft":
-			if(counter < focusedLine.textContent.length) {
+			if(counter < line.focusedLine.textContent.length) {
 				counter++;
 				handleArrowLeftRight();
 			}
@@ -118,21 +118,21 @@ document.addEventListener('keydown', (event) => {
 
 		default:
 			if (typeof (linePosition) != "undefined") {
-				focusedLine.innerText = linePosition.left + event.key;
-				focusedLine.innerHTML += cursor.cursor.outerHTML;
-				focusedLine.innerHTML +=  linePosition.right;
+				line.focusedLine.innerText = linePosition.left + event.key;
+				line.focusedLine.innerHTML += cursor.cursor.outerHTML;
+				line.focusedLine.innerHTML +=  linePosition.right;
 
 			} else {
-				focusedLine.innerText = event.key;
-				focusedLine.innerHTML += cursor.cursor.outerHTML;
+				line.focusedLine.innerText = event.key;
+				line.focusedLine.innerHTML += cursor.cursor.outerHTML;
 			}
 	}
 
-	linePosition = editor.updatePosition(focusedLine, counter);
+	linePosition = editor.updatePosition(line.focusedLine, counter);
 
-	if (focusedLineCpy.parentElement.id != focusedLine.parentElement.id) {
-		line.updateLine(focusedLineCpy, focusedLine);
-		focusedLineCpy = focusedLine;
+	if (line.focusedLineCpy.parentElement.id != line.focusedLine.parentElement.id) {
+		line.updateLine();
+		line.focusedLineCpy = line.focusedLine;
 	}
 });
 

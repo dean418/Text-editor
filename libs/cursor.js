@@ -1,28 +1,30 @@
-const Editor = require('./editor');
+const Line = require('./line');
 
-class Cursor extends Editor {
-	constructor(lines) {
-		super();
+class Cursor extends Line {
+	constructor() {
+		super({...line});
 		this.cursor;
-		this.lines = lines;
 	}
 
-	createCursor(focusedLine) {
+	createCursor() {
 		let cursor = document.createElement("span");
 
 		cursor.id = "cursor";
 		this.cursor = cursor;
-		focusedLine.innerHTML += cursor.outerHTML;
+		line.focusedLine.innerHTML += cursor.outerHTML;
 	}
 
-	addCursor(focusedLine, linePosition) {
-		focusedLine.innerText = linePosition.left;
-		focusedLine.innerHTML += this.cursor.outerHTML;
-		focusedLine.innerHTML += linePosition.right;
+	addCursor(linePosition) {
+		line.focusedLine.innerText = linePosition.left;
+		line.focusedLine.innerHTML += this.cursor.outerHTML;
+		line.focusedLine.innerHTML += linePosition.right;
 	}
 
-	removePrevLineCursor(focusedLine, direction) {
-		let currentLine = focusedLine.parentElement;
+	removePrevLineCursor(direction) {
+		/*
+			indexes off?
+		*/
+		let currentLine = line.focusedLine.parentElement;
 		let currentLineId = parseInt(currentLine.id);
 		let previousLine = 0;
 
@@ -32,9 +34,11 @@ class Cursor extends Editor {
 			previousLine = currentLineId - 2;
 		}
 
-		let prevLineNodes = this.lines[previousLine].childNodes[1].childNodes
+		let prevLineNodes = line.lines[previousLine].childNodes[1].childNodes;
+		// console.log(prevLineNodes)
+
 		for (let i = 0; i < prevLineNodes.length; i++) {
-			if (prevLineNodes[i].tagName !== undefined && prevLineNodes[i].tagName.toLowerCase() == "span") {
+			if (prevLineNodes[i].tagName !== undefined && prevLineNodes[i].tagName == "SPAN") {
 				prevLineNodes[i].remove();
 			}
 		}

@@ -1,6 +1,6 @@
 class Editor {
-	constructor(container) {
-		this.container = container;
+	constructor() {
+		this.container = document.getElementById("editorContainer");
 	}
 
 	updatePosition(focusedLine, counter) {

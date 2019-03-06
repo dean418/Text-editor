@@ -1,12 +1,15 @@
 const Editor = require('./editor');
 
 class Line extends Editor {
-	constructor() {
-		super(container);
-		this.lines = []
+	constructor(focusedLine) {
+		super(editor);
+		this.container = editor.container;
+		this.lines = [];
+		this.focusedLine = focusedLine
+		this.focusedLineCpy = focusedLine;
 	}
 
-	addLine(focusedLine, start) {
+	static constructLine() {
 		// create elements for editor line
 		let line = document.createElement("div");
 		let rowContent = document.createElement("div");
@@ -22,31 +25,42 @@ class Line extends Editor {
 		line.appendChild(rowNum);
 		line.appendChild(rowContent);
 
-		if (start) {
-			rowContent.classList.add("focused");
-			this.container.appendChild(line);
-			this.lines.push(line);
-		} else {
-			let nextLineId = parseInt(focusedLine.parentElement.id);
+		return line
+	}
 
-			this.container.insertBefore(line, this.lines[nextLineId]); //new line, next line
-			this.lines.splice(nextLineId, 0, line);
+	static addFirstLine(container) {
+		let line = this.constructLine();
+
+		line.childNodes[1].classList.add("focused");
+		container.appendChild(line);
+		return line;
+	}
+
+	addLine() {
+		let line = Line.constructLine();
+		let lineId = parseInt(this.focusedLine.parentElement.id);
+		
+		if(lineId == this.lines.length) {
+			this.lines.push(line);
+			this.container.appendChild(line)
+		} else {
+			this.lines.splice(lineId, 0, line);
+			let thing = this.focusedLine.parentNode;
+			thing.parentNode.insertBefore(line, thing.nextSibling)			
 		}
 
-		// add line numbers
 		this.sortLineNumbers();
-
 		return line.childNodes[1];
 	}
 
-	updateLine(focusedLineCpy, focusedLine) {
-		focusedLine.classList.add("focused");
-		focusedLineCpy.classList.remove("focused");
+	updateLine() {
+		this.focusedLine.classList.add("focused");
+		this.focusedLineCpy.classList.remove("focused");
 	}
 
 	sortLineNumbers() {
 		let lineNumber = 1;
-
+		
 		for (let line of this.lines) {
 			line.id = lineNumber;
 			line.childNodes[0].innerHTML = lineNumber;
