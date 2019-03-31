@@ -1,6 +1,5 @@
 class Line {
 	constructor() { 
-		// this.counter = 0;
 		this.line = this.constructLine();
 	}
 	

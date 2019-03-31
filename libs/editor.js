@@ -6,7 +6,7 @@ class Editor {
 	constructor() {
 		this.container = document.getElementById("editorContainer");
 		this.lines = [];
-		this.counter = 0;
+		this.cursorCounter = 0;
 		this.cursor = new Cursor().cursor;
 		this.focusedLine = this.addLine();
 		this.focusedLineCpy = this.focusedLine;
@@ -15,11 +15,12 @@ class Editor {
 
 	updatePosition() {
 		let lineText = this.focusedLine.textContent;
-		let leftLinePos = lineText.substring(0, lineText.length - this.counter);
-		let rightLinePos = lineText.substring(lineText.length - this.counter, lineText.length);
-
-		leftLinePos = leftLinePos.replace(/(\r\n|\n|\r|u21b5)/gm, "");
-		rightLinePos = rightLinePos.replace(/(\r\n|\n|\r|u21b5)/gm, "");
+		let leftLinePos = lineText.substring(0, this.cursorCounter);
+		let rightLinePos = lineText.substring(this.cursorCounter, lineText.length);
+		
+		let removeSpace = /(\r\n|\n|\r|u21b5)/gm;
+		leftLinePos = leftLinePos.replace(removeSpace, "");
+		rightLinePos = rightLinePos.replace(removeSpace, "");
 
 		return {
 			left: leftLinePos,

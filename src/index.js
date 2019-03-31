@@ -22,6 +22,12 @@ function handleArrowLeftRight() {
 	editor.addCursor(editor.linePosition);
 }
 
+function checkCounter() {
+	if (editor.cursorCounter > editor.focusedLine.textContent.length) {
+		editor.cursorCounter = editor.focusedLine.textContent.length;
+	}
+}
+
 document.addEventListener('keydown', (event) => {
 	let key = event.key;
 	switch (key) {
@@ -45,21 +51,21 @@ document.addEventListener('keydown', (event) => {
 
 		case "Enter":
 			editor.focusedLine = editor.addLine();
-			editor.counter = 0;
+			editor.cursorCounter = 0;
 			editor.removePrevLineCursor("down");
 			editor.linePosition = editor.updatePosition();
 			editor.addCursor(editor.linePosition)
 			break;
 
 		case "Backspace":
-			editor.focusedLine = keypress.backspace(editor.focusedLine, linePosition);
+			editor.focusedLine = keypress.backspace(editor.focusedLine, editor.linePosition);
 			editor.linePosition = editor.updatePosition()
 			editor.addCursor(editor.linePosition);
 			break;
 
 		case "Delete":
 			editor.linePosition = keypress.delete(editor.focusedLine, editor.linePosition, editor.lines);
-			editor.counter--;
+			editor.cursorCounter--;
 			editor.linePosition = editor.updatePosition();
 			editor.addCursor();
 			break;
@@ -79,24 +85,28 @@ document.addEventListener('keydown', (event) => {
 			// arrows
 		case "ArrowUp":
 			editor.focusedLine = keypress.upArrow(editor.focusedLine, editor.lines, editor.container);
+			
+			checkCounter();
 			handleArrowUpDown("up");
 			break;
 
 		case "ArrowDown":
-			editor.focusedLine =keypress.downArrow(editor.focusedLine, editor.lines, editor.container);
+			editor.focusedLine = keypress.downArrow(editor.focusedLine, editor.lines, editor.container);
+
+			checkCounter();
 			handleArrowUpDown("down");
 			break;
 
 		case "ArrowLeft":
-			if (editor.counter < editor.focusedLine.textContent.length) {
-				editor.counter++;
+			if (editor.cursorCounter !== 0) {
+				editor.cursorCounter--;
 				handleArrowLeftRight();
 			}
 			break;
 
 		case "ArrowRight":
-			if (editor.counter !== 0) {
-				editor.counter--;
+			if (editor.cursorCounter !== editor.focusedLine.textContent.length) {
+				editor.cursorCounter++;
 				handleArrowLeftRight();
 			}
 			break;
@@ -105,6 +115,7 @@ document.addEventListener('keydown', (event) => {
 			editor.focusedLine.innerText = editor.linePosition.left + event.key;
 			editor.focusedLine.innerHTML += editor.cursor.outerHTML;
 			editor.focusedLine.innerHTML += editor.linePosition.right;
+			editor.cursorCounter++;
 	}
 
 	editor.linePosition = editor.updatePosition();
