@@ -1,3 +1,7 @@
+* {
+	white-space: pre;
+}
+
 html,
 body {
 	margin: 0;
@@ -36,7 +40,7 @@ body {
 }
 
 #cursor {
-	animation: blink 0.80s infinite ;
+	animation: blink 1s steps(2, start) infinite; 
 	display: inline-block;
 	width: 1px;
 	height: 100%;
@@ -49,11 +53,7 @@ body {
 
 /* keyframes */
 @keyframes blink {
-	from {
-		opacity: 1.0
-	}
-
 	to {
-		opacity: 0.0
+		visibility: hidden;
 	}
 }

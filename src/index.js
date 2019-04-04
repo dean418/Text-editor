@@ -1,24 +1,26 @@
 const Keypress = require('./libs/keypress');
 const Editor = require('./libs/editor');
+const Clipboard = require('./libs/clipboard')
 
 const editor = new Editor();
 const keypress = new Keypress();
+const clipboard = new Clipboard();
 
 editor.addCursor();
 
 function handleSpace() {
-	editor.linePosition = editor.updatePosition(editor.focusedLine, editor.linePosition)
+	editor.linePosition = editor.updatePosition();
 	editor.addCursor(editor.linePosition);
 }
 
 function handleArrowUpDown(direction) {
 	editor.removePrevLineCursor(direction);
-	editor.linePosition = editor.updatePosition(editor.focusedLine, editor.linePosition);
+	editor.linePosition = editor.updatePosition();
 	editor.addCursor(editor.linePosition);
 }
 
 function handleArrowLeftRight() {
-	editor.linePosition = editor.updatePosition(editor.focusedLine, editor.linePosition)
+	editor.linePosition = editor.updatePosition()
 	editor.addCursor(editor.linePosition);
 }
 
@@ -58,28 +60,30 @@ document.addEventListener('keydown', (event) => {
 			break;
 
 		case "Backspace":
-			editor.focusedLine = keypress.backspace(editor.focusedLine, editor.linePosition);
-			editor.linePosition = editor.updatePosition()
+			editor.focusedLine = keypress.backspace(editor.focusedLine, editor.linePosition, editor.lines);
+			editor.cursorCounter = editor.focusedLine.textContent.length;
+			editor.linePosition = editor.updatePosition();
 			editor.addCursor(editor.linePosition);
 			break;
 
 		case "Delete":
 			editor.linePosition = keypress.delete(editor.focusedLine, editor.linePosition, editor.lines);
-			editor.cursorCounter--;
 			editor.linePosition = editor.updatePosition();
 			editor.addCursor();
 			break;
 
 		case "Tab":
 			let tab = "&nbsp&nbsp&nbsp&nbsp";
+			editor.cursorCounter += 4;
 			editor.focusedLine = keypress.addSpaces(editor.focusedLine, editor.linePosition, tab);
-			handleSpace();
+			handleSpace(tab);
 			break;
 
 		case " ":
 			space = "&nbsp";
 			editor.focusedLine = keypress.addSpaces(editor.focusedLine, editor.linePosition, space);
-			handleSpace();
+			editor.cursorCounter++;
+			handleSpace(space);
 			break;
 
 			// arrows
@@ -108,6 +112,30 @@ document.addEventListener('keydown', (event) => {
 			if (editor.cursorCounter !== editor.focusedLine.textContent.length) {
 				editor.cursorCounter++;
 				handleArrowLeftRight();
+			}
+			break;
+
+		//paste
+
+		case "v":
+			if(event.ctrlKey){
+				let firstLine = true;
+				let clipboardData = clipboard.getClipboardData();
+				clipboardData = clipboardData.split('\n');
+
+				for (let line of clipboardData) {
+					if(firstLine) {
+						editor.focusedLine.textContent += line;
+						firstLine = false;
+					} else {
+						editor.focusedLine = editor.addLine();
+						editor.focusedLine.innerText += line;
+						editor.removePrevLineCursor("down");
+					}
+				}
+				editor.cursorCounter = editor.focusedLine.textContent.length;
+				editor.linePosition = editor.updatePosition();
+				editor.addCursor();
 			}
 			break;
 

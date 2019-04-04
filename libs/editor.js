@@ -53,7 +53,6 @@ class Editor {
 		}
 
 		this.sortLineNumbers();
-		this.newLine = true
 		return line.childNodes[1];
 	}
 

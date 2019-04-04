@@ -21,8 +21,6 @@ class Line {
 
 		return line;
 	}
-
-
 }
 
 module.exports = Line;

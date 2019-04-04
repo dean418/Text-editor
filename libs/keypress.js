@@ -2,9 +2,9 @@ class Keypress {
 	constructor() {
 	}
 
-	backspace(focusedLine, linePosition) {
+	backspace(focusedLine, linePosition, lines) {
 		if (focusedLine.innerText == "" && focusedLine.parentElement.id != 1) {
-			return this.removeLine(focusedLine);
+			return this.removeLine(focusedLine, lines);
 		} else {
 			focusedLine.textContent = linePosition.left.substr(0, linePosition.left.length - 1) + linePosition.right;
 			return focusedLine;
@@ -24,7 +24,9 @@ class Keypress {
 			}
 		}
 
-	removeLine(focusedLine, del) {
+		
+
+	removeLine(focusedLine, lines, del) {
 		let currentLine = focusedLine.parentElement;
 		let currentLineId = parseInt(currentLine.id);
 
@@ -38,7 +40,7 @@ class Keypress {
 			focusedLine = lines[previousLine].childNodes[1];
 			lines.splice(currentLineId - 1, 1); // remove from arrayw
 		}
-		sortLineNumbers();
+		// sortLineNumbers();
 		return focusedLine
 	}
 
@@ -64,8 +66,8 @@ class Keypress {
 	addSpaces(focusedLine, linePosition, space) {
 		focusedLine.innerText = linePosition.left;
 		focusedLine.innerHTML += space;
-		focusedLine.innerText += linePosition.right;
-		return focusedLine
+		focusedLine.innerHTML += linePosition.right;
+		return focusedLine;
 	}
 }
 
