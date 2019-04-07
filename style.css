@@ -45,6 +45,7 @@ body {
 
 .rowContent {
 	width: 100%;
+	height: auto;
 	padding-left: 5px;
 	display: flex;
 	align-items: center;

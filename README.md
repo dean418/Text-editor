@@ -18,9 +18,11 @@ Basic text editor
 - [x] pasting text
 - [x] drop text to new line on enter when cursor is between text
 - [x] copying text
+- [ ] select line by clicking
 - [ ] saving to file
 - [ ] syntax highlighting
 - [ ] bracket matching
+- [ ] wrap brackets around selected text
 
 ## Security
 
