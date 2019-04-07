@@ -61,14 +61,14 @@ class Editor {
 
 		for (let line of this.lines) {
 			line.id = lineNumber;
-			line.childNodes[0].innerHTML = lineNumber;
+			line.childNodes[0].textContent = lineNumber;
 			lineNumber += 1;
 		}
 		lineNumber = 1;
 	}
 
 	addCursor() {
-		this.focusedLine.innerText = this.linePosition.left;
+		this.focusedLine.textContent = this.linePosition.left;
 		this.focusedLine.innerHTML += this.cursor.outerHTML;
 		this.focusedLine.innerHTML += this.linePosition.right;
 	}

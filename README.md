@@ -16,7 +16,8 @@ Basic text editor
 - [x] ability to navigate up, down, left, right
 - [x] highlight current line
 - [x] pasting text
-- [ ] copying text
+- [x] drop text to new line on enter when cursor is between text
+- [x] copying text
 - [ ] saving to file
 - [ ] syntax highlighting
 - [ ] bracket matching

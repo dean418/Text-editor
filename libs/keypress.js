@@ -64,9 +64,9 @@ class Keypress {
 	}
 
 	addSpaces(focusedLine, linePosition, space) {
-		focusedLine.innerText = linePosition.left;
-		focusedLine.innerHTML += space;
-		focusedLine.innerHTML += linePosition.right;
+		focusedLine.textContent = linePosition.left;
+		focusedLine.textContent += space;
+		focusedLine.textContent += linePosition.right;
 		return focusedLine;
 	}
 }
