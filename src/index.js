@@ -8,7 +8,6 @@ const clipboard = new Clipboard();
 
 editor.addCursor();
 
-
 function handleSpace() {
 	editor.linePosition = editor.updatePosition();
 	editor.addCursor(editor.linePosition);

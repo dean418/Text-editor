@@ -49,7 +49,7 @@ class Editor {
 		} else {
 			this.lines.splice(lineId, 0, line);
 			let focusedLine = this.focusedLine.parentNode;
-			focusedLine.parentNode.insertBefore(line, focusedLine.nextSibling)
+			focusedLine.parentNode.insertBefore(line, focusedLine.nextSibling);
 		}
 
 		this.sortLineNumbers();
@@ -73,18 +73,8 @@ class Editor {
 		this.focusedLine.innerHTML += this.linePosition.right;
 	}
 
-	removePrevLineCursor(direction) {
-		let currentLine = this.focusedLine.parentElement;
-		let currentLineId = parseInt(currentLine.id);
-		let previousLine = 0;
-
-		if (direction === "up") {
-			previousLine = currentLineId;
-		} else if (direction === "down") {
-			previousLine = currentLineId -2;
-		}
-
-		let prevLineNodes = this.lines[previousLine].childNodes[1].childNodes;
+	removePrevLineCursor() {
+		let prevLineNodes = this.focusedLineCpy.childNodes
 
 		for (let i = 0; i < prevLineNodes.length; i++) {
 			if (prevLineNodes[i].tagName !== undefined && prevLineNodes[i].tagName == "SPAN") {
