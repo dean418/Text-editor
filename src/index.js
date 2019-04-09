@@ -96,7 +96,7 @@ document.addEventListener('keydown', (event) => {
 
 		case "Backspace":
 			editor.focusedLine = keypress.backspace(editor.focusedLine, editor.linePosition, editor.lines);
-			editor.cursorCounter = editor.focusedLine.textContent.length;
+			editor.cursorCounter--;
 			editor.linePosition = editor.updatePosition();
 			editor.addCursor(editor.linePosition);
 			break;

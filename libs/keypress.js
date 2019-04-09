@@ -40,7 +40,6 @@ class Keypress {
 			focusedLine = lines[previousLine].childNodes[1];
 			lines.splice(currentLineId - 1, 1); // remove from arrayw
 		}
-		// sortLineNumbers();
 		return focusedLine
 	}
 

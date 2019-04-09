@@ -47,6 +47,7 @@ body {
 	align-items: center;
 	color: #fff;
 	background-color: var(--light-gray);
+	cursor: text;
 	font-size: 1.1em;
 	letter-spacing: 0.15em;
 }
