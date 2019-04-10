@@ -3,7 +3,7 @@ const Editor = require('./libs/editor');
 const Clipboard = require('./libs/clipboard');
 
 const editor = new Editor();
-const keypress = new Keypress();
+const keypress = new Keypress(editor);
 const clipboard = new Clipboard();
 
 editor.addCursor();
@@ -95,28 +95,29 @@ document.addEventListener('keydown', (event) => {
 			break;
 
 		case "Backspace":
-			editor.focusedLine = keypress.backspace(editor.focusedLine, editor.linePosition, editor.lines);
-			editor.cursorCounter--;
+			keypress.backspace();
 			editor.linePosition = editor.updatePosition();
 			editor.addCursor(editor.linePosition);
+			editor.sortLineNumbers();
 			break;
 
 		case "Delete":
-			editor.linePosition = keypress.delete(editor.focusedLine, editor.linePosition, editor.lines);
+			keypress.delete();
 			editor.linePosition = editor.updatePosition();
 			editor.addCursor();
+			editor.sortLineNumbers();
 			break;
 
 		case "Tab":
 			let tab = "\u00A0\u00A0\u00A0\u00A0";
 			editor.cursorCounter += 4;
-			editor.focusedLine = keypress.addSpaces(editor.focusedLine, editor.linePosition, tab);
+			keypress.addSpaces(tab);
 			handleSpace(tab);
 			break;
 
 		case " ":
 			space = "\u00A0";
-			editor.focusedLine = keypress.addSpaces(editor.focusedLine, editor.linePosition, space);
+			keypress.addSpaces(space);
 			editor.cursorCounter++;
 			handleSpace(space);
 			break;
@@ -125,7 +126,7 @@ document.addEventListener('keydown', (event) => {
 		case "ArrowUp":
 			event.preventDefault();
 		
-			editor.focusedLine = keypress.upArrow(editor.focusedLine, editor.lines, editor.container);
+			keypress.upArrow();
 	
 			if (isOutOfView("up")) {
 				scroll(true);
@@ -138,7 +139,7 @@ document.addEventListener('keydown', (event) => {
 		case "ArrowDown":
 			event.preventDefault();
 		
-			editor.focusedLine = keypress.downArrow(editor.focusedLine, editor.lines, editor.container);
+			keypress.downArrow();
 
 			if (isOutOfView("down")) {
 				scroll();

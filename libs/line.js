@@ -5,6 +5,11 @@ class Line {
 		this.line.onclick = function () {
 			// TODO: cleanup, make cleanup method
 			let selection = window.getSelection();
+	
+			if(selection.toString() !== "") {
+				return;
+			}
+
 			editor.focusedLine = this.childNodes[1];
 
 			if (this.id !== editor.focusedLineCpy.parentNode.id) {

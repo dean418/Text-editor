@@ -1,72 +1,69 @@
 class Keypress {
-	constructor() {
+	constructor(editor) {
+		this.editor = editor
 	}
 
-	backspace(focusedLine, linePosition, lines) {
-		if (focusedLine.innerText == "" && focusedLine.parentElement.id != 1) {
-			return this.removeLine(focusedLine, lines);
+	backspace() {
+		if (editor.linePosition.left == "" && editor.focusedLine.parentElement.id != 1) {
+			this.removeLine();
+			editor.cursorCounter = editor.focusedLine.textContent.length;
+			editor.focusedLine.textContent += editor.linePosition.right;
 		} else {
-			focusedLine.textContent = linePosition.left.substr(0, linePosition.left.length - 1) + linePosition.right;
-			return focusedLine;
-		}
-	}
-
-	delete(focusedLine, linePosition, lines) {
-		if (focusedLine.innerText == "" && focusedLine.parentElement.id != lines.length) {
-			return this.removeLine(focusedLine, true);
-		} else 
-			linePosition.right = linePosition.right.substr(1, linePosition.right.length);
-			focusedLine.textContent = linePosition.left + linePosition.right;
-
-			return {
-				left: linePosition.left,
-				right: linePosition.right
+			editor.focusedLine.textContent = editor.linePosition.left.substr(0, editor.linePosition.left.length - 1) + editor.linePosition.right;
+			if(editor.linePosition.left !== ""){
+				editor.cursorCounter--;
 			}
 		}
+	}
 
-		
+	delete() {
+		let parentElement = editor.focusedLine.parentElement.id
+		if (editor.linePosition.right == "" && parentElement != editor.lines.length) {
+			let lineContent = editor.lines[parentElement].childNodes[1].textContent;
+			this.removeLine(true);
+			editor.cursorCounter = editor.focusedLine.textContent.length;
+			editor.focusedLine.textContent += lineContent;
 
-	removeLine(focusedLine, lines, del) {
-		let currentLine = focusedLine.parentElement;
+		} else {
+			editor.linePosition.right = editor.linePosition.right.substr(1, editor.linePosition.right.length);
+			editor.focusedLine.textContent = editor.linePosition.left + editor.linePosition.right;
+		}
+	}
+
+	removeLine(del) {
+		let currentLine = editor.focusedLine.parentElement;
 		let currentLineId = parseInt(currentLine.id);
 
 		if (del) {
-			let nextLine = currentLineId;
-			lines[nextLine].remove();
-			lines.splice(nextLine, 1);
+			editor.lines[currentLineId].remove();
+			editor.lines.splice(currentLineId, 1);
 		} else {
 			let previousLine = currentLineId - 2; // 1 for prev line, 1 for array index
 			currentLine.remove(); // remove from DOM
-			focusedLine = lines[previousLine].childNodes[1];
-			lines.splice(currentLineId - 1, 1); // remove from arrayw
+			editor.focusedLine = editor.lines[previousLine].childNodes[1];
+			editor.lines.splice(currentLineId - 1, 1); // remove from arrayw
 		}
-		return focusedLine
 	}
 
-	upArrow(focusedLine, lines) {
-		let lineNum = focusedLine.parentElement.id;
+	upArrow() {
+		let lineNum = editor.focusedLine.parentElement.id;
 		if (lineNum !== "1") {
 			let prevLine = lineNum - 1;
-			focusedLine = lines[prevLine - 1].childNodes[1]
+			editor.focusedLine = editor.lines[prevLine - 1].childNodes[1]
 		}
-
-		return focusedLine;
 	}
 
-	downArrow(focusedLine, lines, container) {
-		let lineNum = focusedLine.parentElement.id;
-		if (lineNum != container.childElementCount) {
-			focusedLine = lines[lineNum].childNodes[1];
+	downArrow() {
+		let lineNum = editor.focusedLine.parentElement.id;
+		if (lineNum != editor.container.childElementCount) {
+			editor.focusedLine = editor.lines[lineNum].childNodes[1];
 		}
-
-		return focusedLine;
 	}
 
-	addSpaces(focusedLine, linePosition, space) {
-		focusedLine.textContent = linePosition.left;
-		focusedLine.textContent += space;
-		focusedLine.textContent += linePosition.right;
-		return focusedLine;
+	addSpaces(space) {
+		editor.focusedLine.textContent = editor.linePosition.left;
+		editor.focusedLine.textContent += space;
+		editor.focusedLine.textContent += editor.linePosition.right;
 	}
 }
 
