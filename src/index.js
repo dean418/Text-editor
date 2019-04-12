@@ -40,7 +40,7 @@ function isOutOfView(direction) {
 			return true;
 		}
 	} else {
-		if(bounding.top <= 0) {
+		if (bounding.top <= 0) {
 			return true;
 		} else {
 			return false;
@@ -52,7 +52,7 @@ function scroll(isNegative) {
 	let height = getComputedStyle(editor.focusedLine).height;
 	height = parseInt(height, 10);
 
-	if(isNegative) {
+	if (isNegative) {
 		window.scrollBy(0, -height);
 	} else {
 		window.scrollBy(0, height);
@@ -125,9 +125,9 @@ document.addEventListener('keydown', (event) => {
 			// arrows
 		case "ArrowUp":
 			event.preventDefault();
-		
+
 			keypress.upArrow();
-	
+
 			if (isOutOfView("up")) {
 				scroll(true);
 			}
@@ -138,7 +138,7 @@ document.addEventListener('keydown', (event) => {
 
 		case "ArrowDown":
 			event.preventDefault();
-		
+
 			keypress.downArrow();
 
 			if (isOutOfView("down")) {
@@ -150,14 +150,52 @@ document.addEventListener('keydown', (event) => {
 			break;
 
 		case "ArrowLeft":
-			if (editor.cursorCounter !== 0) {
+			if (event.shiftKey && event.ctrlKey) {
+
+			} else if (event.shiftKey) {
+
+			} else if (editor.cursorCounter !== 0) {
 				editor.cursorCounter--;
 				handleArrowLeftRight();
 			}
 			break;
 
 		case "ArrowRight":
-			if (editor.cursorCounter !== editor.focusedLine.textContent.length) {
+			if (event.shiftKey && event.ctrlKey) {
+				if (!editor.focusedLine.childNodes[2]) {
+					break;
+				}
+
+				let selection = window.getSelection();
+				let range = document.createRange();
+
+				range.selectNodeContents(editor.focusedLine.childNodes[2]);
+
+				selection.removeAllRanges();
+				selection.addRange(range);
+
+				// TODO: stop selection at special character, (span tags?)
+			} else if (event.shiftKey) {
+				if (!editor.focusedLine.childNodes[2]) {
+					break;
+				}
+
+				let selection = window.getSelection();
+				let range = document.createRange();
+				editor.focusedLine.childNodes[2].splitText(2);
+
+				console.log(editor.focusedLine.childNodes);
+				console.log(editor.focusedLine.childNodes[2]);
+				range.selectNodeContents(editor.focusedLine.childNodes[2]);
+				console.log(range)
+
+				selection.removeAllRanges();
+				selection.addRange(range);
+
+				// selection.modify("extend", "left", "character");
+				// selection.modify("extend", "backward", "character")
+
+			} else if (editor.cursorCounter !== editor.focusedLine.textContent.length) {
 				editor.cursorCounter++;
 				handleArrowLeftRight();
 			}
@@ -171,21 +209,25 @@ document.addEventListener('keydown', (event) => {
 		case "v":
 			if (event.ctrlKey) {
 				let firstLine = true;
+				let rightText = editor.linePosition.right;
 				let clipboardData = clipboard.getClipboardData();
 				clipboardData = clipboardData.split('\n');
 
 				for (let line of clipboardData) {
 					line = line.replace(/\t/gm, '\u00A0\u00A0\u00A0\u00A0');
 					if (firstLine) {
+						editor.focusedLine.textContent = editor.linePosition.left;
 						editor.focusedLine.textContent += line;
 						firstLine = false;
 					} else {
+						editor.updateLine();
 						editor.focusedLine = editor.addLine();
-						editor.focusedLine.textContent += line;
 						editor.removePrevLineCursor("down");
+						editor.focusedLine.textContent += line;
 					}
 				}
 				editor.cursorCounter = editor.focusedLine.textContent.length;
+				editor.focusedLine.textContent += rightText;
 				editor.linePosition = editor.updatePosition();
 				editor.addCursor();
 			}

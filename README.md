@@ -15,14 +15,16 @@ Basic text editor
 - [x] cursor at current position in text
 - [x] ability to navigate up, down, left, right
 - [x] highlight current line
-- [x] pasting text
+- [x] copying / pasting text
 - [x] drop text to new line on enter when cursor is between text
-- [x] copying text
 - [x] select line by clicking
+- [ ] set / change file name
+- [ ] create new files
 - [ ] saving to file
 - [ ] syntax highlighting
 - [ ] bracket matching
 - [ ] wrap brackets around selected text
+- [ ] undo changes
 
 ## Security
 
