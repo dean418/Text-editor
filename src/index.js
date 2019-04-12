@@ -180,30 +180,20 @@ document.addEventListener('keydown', (event) => {
 					break;
 				}
 
+				event.preventDefault();
 				let selection = window.getSelection();
 				let range = document.createRange();
-				editor.focusedLine.childNodes[2].splitText(2);
+				editor.focusedLine.childNodes[2].splitText(1);
 
-				console.log(editor.focusedLine.childNodes);
-				console.log(editor.focusedLine.childNodes[2]);
 				range.selectNodeContents(editor.focusedLine.childNodes[2]);
-				console.log(range)
 
 				selection.removeAllRanges();
 				selection.addRange(range);
-
-				// selection.modify("extend", "left", "character");
-				// selection.modify("extend", "backward", "character")
 
 			} else if (editor.cursorCounter !== editor.focusedLine.textContent.length) {
 				editor.cursorCounter++;
 				handleArrowLeftRight();
 			}
-			break;
-
-			//copy & paste
-
-		case "c":
 			break;
 
 		case "v":
@@ -234,6 +224,9 @@ document.addEventListener('keydown', (event) => {
 			break;
 
 		default:
+			if (event.ctrlKey) {
+				break;
+			}
 			editor.focusedLine.textContent = editor.linePosition.left + event.key;
 			editor.focusedLine.innerHTML += editor.cursor.outerHTML;
 			editor.focusedLine.innerHTML += editor.linePosition.right;
