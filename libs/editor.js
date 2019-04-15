@@ -56,6 +56,18 @@ class Editor {
 		return line.childNodes[1];
 	}
 
+	addCursor() {
+		this.focusedLine.textContent = this.linePosition.left;
+		this.focusedLine.innerHTML += this.cursor.outerHTML;
+		this.focusedLine.innerHTML += this.linePosition.right;
+	}
+
+	checkCounter() {
+		if (this.cursorCounter > this.focusedLine.textContent.length) {
+			this.cursorCounter = this.focusedLine.textContent.length;
+		}
+	}
+
 	sortLineNumbers() {
 		let lineNumber = 1;
 
@@ -67,10 +79,15 @@ class Editor {
 		lineNumber = 1;
 	}
 
-	addCursor() {
-		this.focusedLine.textContent = this.linePosition.left;
-		this.focusedLine.innerHTML += this.cursor.outerHTML;
-		this.focusedLine.innerHTML += this.linePosition.right;
+	scroll(isNegative) {
+		let height = getComputedStyle(editor.focusedLine).height;
+		height = parseInt(height, 10);
+	
+		if (isNegative) {
+			window.scrollBy(0, -height);
+		} else {
+			window.scrollBy(0, height);
+		}
 	}
 
 	removePrevLineCursor() {

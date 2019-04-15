@@ -1,10 +1,10 @@
 const Keypress = require('./libs/keypress');
 const Editor = require('./libs/editor');
-const Clipboard = require('./libs/clipboard');
+const Select = require('./libs/select');
 
 const editor = new Editor();
+const select = new Select(editor);
 const keypress = new Keypress(editor);
-const clipboard = new Clipboard();
 
 editor.addCursor();
 
@@ -20,14 +20,8 @@ function handleArrowUpDown(direction) {
 }
 
 function handleArrowLeftRight() {
-	editor.linePosition = editor.updatePosition()
+	editor.linePosition = editor.updatePosition();
 	editor.addCursor(editor.linePosition);
-}
-
-function checkCounter() {
-	if (editor.cursorCounter > editor.focusedLine.textContent.length) {
-		editor.cursorCounter = editor.focusedLine.textContent.length;
-	}
 }
 
 function isOutOfView(direction) {
@@ -45,17 +39,6 @@ function isOutOfView(direction) {
 		} else {
 			return false;
 		}
-	}
-}
-
-function scroll(isNegative) {
-	let height = getComputedStyle(editor.focusedLine).height;
-	height = parseInt(height, 10);
-
-	if (isNegative) {
-		window.scrollBy(0, -height);
-	} else {
-		window.scrollBy(0, height);
 	}
 }
 
@@ -80,6 +63,9 @@ document.addEventListener('keydown', (event) => {
 		case "AltGraph":
 			break;
 
+		case "CapsLock":
+			break;
+
 		case "Enter":
 			editor.focusedLine.textContent = editor.linePosition.left;
 			editor.focusedLine = editor.addLine();
@@ -90,7 +76,7 @@ document.addEventListener('keydown', (event) => {
 			editor.addCursor(editor.linePosition);
 
 			if (isOutOfView("down")) {
-				scroll();
+				editor.scroll();
 			}
 			break;
 
@@ -129,10 +115,10 @@ document.addEventListener('keydown', (event) => {
 			keypress.upArrow();
 
 			if (isOutOfView("up")) {
-				scroll(true);
+				editor.scroll(true);
 			}
 
-			checkCounter();
+			editor.checkCounter();
 			handleArrowUpDown("up");
 			break;
 
@@ -142,18 +128,18 @@ document.addEventListener('keydown', (event) => {
 			keypress.downArrow();
 
 			if (isOutOfView("down")) {
-				scroll();
+				editor.scroll();
 			}
 
-			checkCounter();
+			editor.checkCounter();
 			handleArrowUpDown("down");
 			break;
 
 		case "ArrowLeft":
 			if (event.shiftKey && event.ctrlKey) {
-
+				select.selectWord("backward");
 			} else if (event.shiftKey) {
-
+				select.selectLetterBackward();
 			} else if (editor.cursorCounter !== 0) {
 				editor.cursorCounter--;
 				handleArrowLeftRight();
@@ -162,33 +148,9 @@ document.addEventListener('keydown', (event) => {
 
 		case "ArrowRight":
 			if (event.shiftKey && event.ctrlKey) {
-				if (!editor.focusedLine.childNodes[2]) {
-					break;
-				}
-
-				let selection = window.getSelection();
-				let range = document.createRange();
-
-				range.selectNodeContents(editor.focusedLine.childNodes[2]);
-
-				selection.removeAllRanges();
-				selection.addRange(range);
-
-				// TODO: stop selection at special character, (span tags?)
+				select.selectWord("forward");
 			} else if (event.shiftKey) {
-				if (!editor.focusedLine.childNodes[2]) {
-					break;
-				}
-
-				event.preventDefault();
-				let selection = window.getSelection();
-				let range = document.createRange();
-				editor.focusedLine.childNodes[2].splitText(1);
-
-				range.selectNodeContents(editor.focusedLine.childNodes[2]);
-
-				selection.removeAllRanges();
-				selection.addRange(range);
+				select.selectLetterForward();
 
 			} else if (editor.cursorCounter !== editor.focusedLine.textContent.length) {
 				editor.cursorCounter++;
@@ -198,28 +160,7 @@ document.addEventListener('keydown', (event) => {
 
 		case "v":
 			if (event.ctrlKey) {
-				let firstLine = true;
-				let rightText = editor.linePosition.right;
-				let clipboardData = clipboard.getClipboardData();
-				clipboardData = clipboardData.split('\n');
-
-				for (let line of clipboardData) {
-					line = line.replace(/\t/gm, '\u00A0\u00A0\u00A0\u00A0');
-					if (firstLine) {
-						editor.focusedLine.textContent = editor.linePosition.left;
-						editor.focusedLine.textContent += line;
-						firstLine = false;
-					} else {
-						editor.updateLine();
-						editor.focusedLine = editor.addLine();
-						editor.removePrevLineCursor("down");
-						editor.focusedLine.textContent += line;
-					}
-				}
-				editor.cursorCounter = editor.focusedLine.textContent.length;
-				editor.focusedLine.textContent += rightText;
-				editor.linePosition = editor.updatePosition();
-				editor.addCursor();
+				keypress.paste();
 			}
 			break;
 

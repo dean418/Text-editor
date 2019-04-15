@@ -18,6 +18,7 @@ Basic text editor
 - [x] copying / pasting text
 - [x] drop text to new line on enter when cursor is between text
 - [x] select line by clicking
+- [ ] select text using keyboard
 - [ ] set / change file name
 - [ ] create new files
 - [ ] saving to file

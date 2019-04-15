@@ -1,6 +1,8 @@
+const Clipboard = require('./clipboard');
+
 class Keypress {
-	constructor(editor) {
-		this.editor = editor
+	constructor() {
+		this.clipboard = new Clipboard();
 	}
 
 	backspace() {
@@ -64,6 +66,31 @@ class Keypress {
 		editor.focusedLine.textContent = editor.linePosition.left;
 		editor.focusedLine.textContent += space;
 		editor.focusedLine.textContent += editor.linePosition.right;
+	}
+
+	paste() {
+		let firstLine = true;
+		let rightText = editor.linePosition.right;
+		let clipboardData = this.clipboard.getClipboardData();
+		clipboardData = clipboardData.split('\n');
+	
+		for (let line of clipboardData) {
+			line = line.replace(/\t/gm, '\u00A0\u00A0\u00A0\u00A0');
+			if (firstLine) {
+				editor.focusedLine.textContent = editor.linePosition.left;
+				editor.focusedLine.textContent += line;
+				firstLine = false;
+			} else {
+				editor.updateLine();
+				editor.focusedLine = editor.addLine();
+				editor.removePrevLineCursor("down");
+				editor.focusedLine.textContent += line;
+			}
+		}
+		editor.cursorCounter = editor.focusedLine.textContent.length;
+		editor.focusedLine.textContent += rightText;
+		editor.linePosition = editor.updatePosition();
+		editor.addCursor();
 	}
 }
 
