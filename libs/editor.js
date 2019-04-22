@@ -91,11 +91,29 @@ class Editor {
 	}
 
 	removePrevLineCursor() {
-		let prevLineNodes = this.focusedLineCpy.childNodes
+		let prevLineNodes = this.focusedLineCpy.childNodes;
 
 		for (let i = 0; i < prevLineNodes.length; i++) {
 			if (prevLineNodes[i].tagName !== undefined && prevLineNodes[i].tagName == "SPAN") {
 				prevLineNodes[i].remove();
+			}
+		}
+	}
+
+	isOutOfView(direction) {
+		let bounding = editor.focusedLine.getBoundingClientRect();
+	
+		if (direction == "down") {
+			if (bounding.bottom + 48 < window.innerHeight) {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			if (bounding.top <= 0) {
+				return true;
+			} else {
+				return false;
 			}
 		}
 	}

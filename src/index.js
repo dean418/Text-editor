@@ -24,24 +24,6 @@ function handleArrowLeftRight() {
 	editor.addCursor(editor.linePosition);
 }
 
-function isOutOfView(direction) {
-	let bounding = editor.focusedLine.getBoundingClientRect();
-
-	if (direction == "down") {
-		if (bounding.bottom + 48 < window.innerHeight) {
-			return false;
-		} else {
-			return true;
-		}
-	} else {
-		if (bounding.top <= 0) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-}
-
 document.addEventListener('keydown', (event) => {
 	let key = event.key;
 	switch (key) {
@@ -75,7 +57,7 @@ document.addEventListener('keydown', (event) => {
 			editor.linePosition = editor.updatePosition();
 			editor.addCursor(editor.linePosition);
 
-			if (isOutOfView("down")) {
+			if (editor.isOutOfView("down")) {
 				editor.scroll();
 			}
 			break;
@@ -114,7 +96,7 @@ document.addEventListener('keydown', (event) => {
 
 			keypress.upArrow();
 
-			if (isOutOfView("up")) {
+			if (editor.isOutOfView("up")) {
 				editor.scroll(true);
 			}
 
@@ -127,7 +109,7 @@ document.addEventListener('keydown', (event) => {
 
 			keypress.downArrow();
 
-			if (isOutOfView("down")) {
+			if (editor.isOutOfView("down")) {
 				editor.scroll();
 			}
 
@@ -138,10 +120,14 @@ document.addEventListener('keydown', (event) => {
 		case "ArrowLeft":
 			if (event.shiftKey && event.ctrlKey) {
 				select.selectWord("backward");
+
 			} else if (event.shiftKey) {
-				select.selectLetterBackward();
-			} else if (editor.cursorCounter !== 0) {
 				editor.cursorCounter--;
+				handleArrowLeftRight();
+				select.selectLetterBackward();
+
+			} else if (editor.cursorCounter !== 0) {
+				select.resetOnArrowKey("left");
 				handleArrowLeftRight();
 			}
 			break;
@@ -150,10 +136,13 @@ document.addEventListener('keydown', (event) => {
 			if (event.shiftKey && event.ctrlKey) {
 				select.selectWord("forward");
 			} else if (event.shiftKey) {
+
+				editor.cursorCounter++;
+				handleArrowLeftRight();
 				select.selectLetterForward();
 
 			} else if (editor.cursorCounter !== editor.focusedLine.textContent.length) {
-				editor.cursorCounter++;
+				select.resetOnArrowKey("right");
 				handleArrowLeftRight();
 			}
 			break;

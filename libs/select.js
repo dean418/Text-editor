@@ -1,6 +1,9 @@
 class Select {
 	constructor(Editor) {
 		this.editor = Editor;
+		this.lastDirection = "";
+		this.selectionCounter = 0;
+		this.cursorCounterCpy = 0;
 	}
 
 	selectLetterForward() {
@@ -8,24 +11,29 @@ class Select {
 
 		let selection = window.getSelection();
 		let range = document.createRange();
-		let startNode = this.selectStartNode();
+		let startNode = editor.focusedLine.childNodes[0];
 
-		let undo = this.undoSelection(true, selection);
-
-		if (undo) {
+		if(this.selectionCounter == 0) {
+			// continue
+		} else if(this.lastDirection == "left") {
+			this.undoSelection(range, selection);
 			return;
 		}
 
-		if (editor.linePosition.right.length == 0) {
+		if (editor.cursorCounter == editor.focusedLine.textContent.length+1) {
+			editor.cursorCounter--;
 			return;
-		}
+		} 
 
-		this.resetSelection(selection);
+		this.resetSelection(-1);
 
-		startNode.splitText(1 + selection.focusOffset);
-		range.selectNodeContents(startNode);
+		startNode.splitText(editor.linePosition.left.length - (1 + this.selectionCounter));
 
-		this.addSelection(range, selection)
+		range.selectNodeContents(editor.focusedLine.childNodes[1]);
+		this.addSelection(range, selection);
+
+		this.selectionCounter++;
+		this.lastDirection = "right";
 	}
 
 	selectLetterBackward() {
@@ -33,64 +41,67 @@ class Select {
 
 		let selection = window.getSelection();
 		let range = document.createRange();
-		let startNode = editor.focusedLine.childNodes[0];
+		let startNode = editor.focusedLine.childNodes[2];
 
-		let undo = this.undoSelection(false, selection);
-
-		if (undo) {
+		if(this.selectionCounter == 0) {
+			// continue
+		} else if(this.lastDirection == "right") {
+			this.undoSelection(range, selection, editor.focusedLine.childNodes[0]);
 			return;
 		}
 
-		if (editor.linePosition.left.length == 0) {
+		if(editor.focusedLine.childNodes[2] == undefined) {
+			startNode = editor.focusedLine.childNodes[1];
+		}
+
+		if (editor.cursorCounter == -1) {
+			editor.cursorCounter++;
 			return;
 		}
 
-		this.resetSelection(selection);
+		this.resetSelection(1);
 
-		startNode.splitText(editor.linePosition.left.length - (1 + selection.toString().length));
-		range.selectNodeContents(editor.focusedLine.childNodes[1]);
+		startNode.splitText(1 + this.selectionCounter);
+		range.selectNodeContents(startNode);
+		
+		this.addSelection(range, selection);
+		this.selectionCounter++;
+		this.lastDirection = "left";
+	}
 
+	undoSelection(range, selection, startNode) {
+		this.selectionCounter--;
+
+		if(startNode) {
+			startNode.splitText((editor.linePosition.left.length + 1) - (1 + this.selectionCounter));
+			range.selectNodeContents(editor.focusedLine.childNodes[1]);
+		} else {
+			startNode = editor.focusedLine.childNodes[2];
+			range.setStart(startNode, 0);
+			range.setEnd(startNode, this.selectionCounter);
+		}
+		
 		this.addSelection(range, selection);
 	}
 
-	selectStartNode() {
-		let startNode;
+	resetSelection(direction) {
+		if(this.cursorCounterCpy != editor.cursorCounter + direction) {
+			this.selectionCounter = 0;
+		}
 
-		if (editor.focusedLine.childNodes[2]) {
-			// Nodes (text, cursor, text)
-			startNode = editor.focusedLine.childNodes[2];
+		this.cursorCounterCpy = editor.cursorCounter;
+	}
+
+	resetOnArrowKey(direction) {
+		if(window.getSelection().toString() == "") {
+			if(direction == "left") {
+				editor.cursorCounter--;
+			} else {
+				editor.cursorCounter++;
+			}
 		} else {
-			// text node 2 doesnt exist. Nodes(cursor, text)
-			startNode = editor.focusedLine.childNodes[1];
-		}
-		return startNode;
-	}
-
-	resetSelection(selection) {
-		if (selection.toString() == "") {
-			selection.removeAllRanges();
-		}
-		return;
-	}
-
-	undoSelection(letterForwards, selection) {
-		this.resetSelection(selection);
-
-		// if left of cursor is selected && right arrow was pressed
-		if (letterForwards && selection.containsNode(editor.focusedLine.childNodes[0], true)) {
-			let range = document.createRange();
-
-			range.setStart(editor.focusedLine.childNodes[0], editor.linePosition.left.length - (selection.toString().length - 1));
-			range.setEnd(editor.focusedLine.childNodes[0], editor.linePosition.left.length);
-
-			this.addSelection(range, selection);
-
-			return true;
-
-			// if right of cursor is selected && left arrow pressed
-		} else if (!letterForwards && selection.containsNode(this.selectStartNode(), true)) {
-			selection.modify("extend", "backward", "character");
-			return true;
+			this.selectionCounter = 0;
+			this.lastDirection = "";
 		}
 	}
 
