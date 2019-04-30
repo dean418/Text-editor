@@ -1,6 +1,11 @@
+/**
+ * TODO:
+ * undo an undo
+ * make selection go to next/previous line
+ */
+
 class Select {
-	constructor(Editor) {
-		this.editor = Editor;
+	constructor() {
 		this.lastDirection = "";
 		this.selectionCounter = 0;
 		this.cursorCounterCpy = 0;
@@ -61,7 +66,7 @@ class Select {
 
 		this.resetSelection(1);
 
-		startNode.splitText(1 + this.selectionCounter);
+		startNode.splitText(this.selectionCounter + 1);
 		range.selectNodeContents(startNode);
 		
 		this.addSelection(range, selection);
@@ -73,14 +78,13 @@ class Select {
 		this.selectionCounter--;
 
 		if(startNode) {
-			startNode.splitText((editor.linePosition.left.length + 1) - (1 + this.selectionCounter));
+			startNode.splitText((editor.linePosition.left.length + 1) - (this.selectionCounter + 1));
 			range.selectNodeContents(editor.focusedLine.childNodes[1]);
 		} else {
 			startNode = editor.focusedLine.childNodes[2];
 			range.setStart(startNode, 0);
 			range.setEnd(startNode, this.selectionCounter);
 		}
-		
 		this.addSelection(range, selection);
 	}
 
@@ -88,7 +92,6 @@ class Select {
 		if(this.cursorCounterCpy != editor.cursorCounter + direction) {
 			this.selectionCounter = 0;
 		}
-
 		this.cursorCounterCpy = editor.cursorCounter;
 	}
 

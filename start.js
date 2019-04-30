@@ -1,7 +1,8 @@
-const electron = require('electron');
-const {app, BrowserWindow} = require('electron');
+const {app, BrowserWindow, Menu} = require('electron');
 const path = require('path');
 const url = require('url');
+
+const menuTemplate = require('./src/menuTemplate');
 
 function createWindow () {
 	// Create the browser window.
@@ -9,9 +10,6 @@ function createWindow () {
 		width: 800,
 		height: 600,
 		title: "Synth",
-		// webPreferences: {
-		// 	nodeIntegreation: false,
-		// }
 	});
 
 	win.webContents.openDevTools();
@@ -24,4 +22,9 @@ function createWindow () {
 	}));
 }
 
-app.on('ready', createWindow);
+app.on('ready', () => {
+	createWindow();
+
+	const menu = Menu.buildFromTemplate(menuTemplate);
+	Menu.setApplicationMenu(menu)
+});
