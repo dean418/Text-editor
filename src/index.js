@@ -1,10 +1,14 @@
-const Keypress = require('./libs/keypress');
-const Editor = require('./libs/editor');
-const Select = require('./libs/select');
+const {ipcRenderer} = require("electron");
+
+const Keypress = require('./libs/renderer/keypress');
+const Editor = require('./libs/renderer/editor');
+const Select = require('./libs/renderer/select');
+const UI = require('./libs/renderer/UI');
 
 const editor = new Editor();
 const select = new Select(editor);
 const keypress = new Keypress(editor);
+const ui = new UI();
 
 editor.addCursor();
 
@@ -170,3 +174,8 @@ document.addEventListener('keydown', (event) => {
 		editor.focusedLineCpy = editor.focusedLine;
 	}
 });
+
+ipcRenderer.on("new-project-folder", (sender, path) => {
+	console.log(path)
+	ui.createFolder();
+})

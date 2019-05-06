@@ -1,5 +1,5 @@
 * {
-	white-space: pre-wrap;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 :root {
@@ -16,6 +16,13 @@ body {
 	justify-content: center;
 	background-color: var(--light-gray);
 }
+
+p {
+	margin: 0;
+	padding: 0;
+}
+
+/* editor */
 
 #editorContainer {
 	width: 90%;
@@ -50,6 +57,7 @@ body {
 	cursor: text;
 	font-size: 1.1em;
 	letter-spacing: 0.15em;
+	white-space: pre-wrap;
 }
 
 .rowContent::selection {
@@ -66,6 +74,41 @@ body {
 	display: inline-block;
 	background-color: #0bc1da;
 	animation: blink 1s steps(2, start) infinite;
+}
+
+/* dirContents */
+
+#dirContent {
+	width: 25vw;
+	height: 100vh;
+	background-color: #303030;
+	font-size: 1.05em;
+}
+
+.file {
+	width: 100%;
+	height: 50px;
+	padding-left: 5px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.icon {
+	width: 25px;
+	height: 25px;
+	background-color: #454545	
+}
+
+.title {
+	width: 80%;
+	height: auto;
+	margin: auto;
+	color: #fff;
+	text-align: center;
 }
 
 /* keyframes */

@@ -29,5 +29,4 @@ Basic text editor
 
 ## Security
 
-- [ ] disable node when running
-- [ ] use IPC to interact with things
+- [x] define a CSP
