@@ -12,23 +12,17 @@ const ui = new UI();
 
 editor.addCursor();
 
-function handleSpace() {
-	editor.linePosition = editor.updatePosition();
-	editor.addCursor(editor.linePosition);
-}
+let editorClicked = true;
 
-function handleArrowUpDown(direction) {
-	editor.removePrevLineCursor(direction);
-	editor.linePosition = editor.updatePosition();
-	editor.addCursor(editor.linePosition);
-}
-
-function handleArrowLeftRight() {
-	editor.linePosition = editor.updatePosition();
-	editor.addCursor(editor.linePosition);
-}
+document.addEventListener("click", (event) => {
+	editorClicked = event.path.includes(editorContainer);
+});
 
 document.addEventListener('keydown', (event) => {
+	if(!editorClicked) {
+		return;
+	}
+
 	let key = event.key;
 	switch (key) {
 		case "Shift":
@@ -84,14 +78,14 @@ document.addEventListener('keydown', (event) => {
 			let tab = "\u00A0\u00A0\u00A0\u00A0";
 			editor.cursorCounter += 4;
 			keypress.addSpaces(tab);
-			handleSpace(tab);
+			editor.handleSpace();
 			break;
 
 		case " ":
 			space = "\u00A0";
-			keypress.addSpaces(space);
 			editor.cursorCounter++;
-			handleSpace(space);
+			keypress.addSpaces(space);
+			editor.handleSpace();
 			break;
 
 			// arrows
@@ -105,7 +99,7 @@ document.addEventListener('keydown', (event) => {
 			}
 
 			editor.checkCounter();
-			handleArrowUpDown("up");
+			editor.handleArrowUpDown("up");
 			break;
 
 		case "ArrowDown":
@@ -118,7 +112,7 @@ document.addEventListener('keydown', (event) => {
 			}
 
 			editor.checkCounter();
-			handleArrowUpDown("down");
+			editor.handleArrowUpDown("down");
 			break;
 
 		case "ArrowLeft":
@@ -127,12 +121,12 @@ document.addEventListener('keydown', (event) => {
 
 			} else if (event.shiftKey) {
 				editor.cursorCounter--;
-				handleArrowLeftRight();
+				editor.handleArrowLeftRight();
 				select.selectLetterBackward();
 
 			} else if (editor.cursorCounter !== 0) {
 				select.resetOnArrowKey("left");
-				handleArrowLeftRight();
+				editor.handleArrowLeftRight();
 			}
 			break;
 
@@ -142,12 +136,12 @@ document.addEventListener('keydown', (event) => {
 			} else if (event.shiftKey) {
 
 				editor.cursorCounter++;
-				handleArrowLeftRight();
+				editor.handleArrowLeftRight();
 				select.selectLetterForward();
 
 			} else if (editor.cursorCounter !== editor.focusedLine.textContent.length) {
 				select.resetOnArrowKey("right");
-				handleArrowLeftRight();
+				editor.handleArrowLeftRight();
 			}
 			break;
 
@@ -176,6 +170,6 @@ document.addEventListener('keydown', (event) => {
 });
 
 ipcRenderer.on("new-project-folder", (sender, path) => {
-	console.log(path)
-	ui.createFolder();
-})
+	ui.clearStructure();
+	ui.createFolder("new-project-folder");
+});
