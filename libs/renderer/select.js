@@ -6,7 +6,7 @@
 
 class Select {
 	constructor() {
-		this.lastDirection = "";
+		this.lastDirection = '';
 		this.selectionCounter = 0;
 		this.cursorCounterCpy = 0;
 	}
@@ -20,7 +20,7 @@ class Select {
 
 		if(this.selectionCounter == 0) {
 			// continue
-		} else if(this.lastDirection == "left") {
+		} else if(this.lastDirection == 'left') {
 			this.undoSelection(range, selection);
 			return;
 		}
@@ -38,7 +38,7 @@ class Select {
 		this.addSelection(range, selection);
 
 		this.selectionCounter++;
-		this.lastDirection = "right";
+		this.lastDirection = 'right';
 	}
 
 	selectLetterBackward() {
@@ -50,7 +50,7 @@ class Select {
 
 		if(this.selectionCounter == 0) {
 			// continue
-		} else if(this.lastDirection == "right") {
+		} else if(this.lastDirection == 'right') {
 			this.undoSelection(range, selection, editor.focusedLine.childNodes[0]);
 			return;
 		}
@@ -71,7 +71,7 @@ class Select {
 		
 		this.addSelection(range, selection);
 		this.selectionCounter++;
-		this.lastDirection = "left";
+		this.lastDirection = 'left';
 	}
 
 	undoSelection(range, selection, startNode) {
@@ -96,15 +96,15 @@ class Select {
 	}
 
 	resetOnArrowKey(direction) {
-		if(window.getSelection().toString() == "") {
-			if(direction == "left") {
+		if(window.getSelection().toString() == '') {
+			if(direction == 'left') {
 				editor.cursorCounter--;
 			} else {
 				editor.cursorCounter++;
 			}
 		} else {
 			this.selectionCounter = 0;
-			this.lastDirection = "";
+			this.lastDirection = '';
 		}
 	}
 

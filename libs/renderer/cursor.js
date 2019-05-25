@@ -4,8 +4,8 @@ class Cursor {
 	}
 
 	createCursor() {
-		let cursor = document.createElement("span");
-		cursor.id = "cursor";
+		let cursor = document.createElement('span');
+		cursor.id = 'cursor';
 
 		return cursor;
 	}

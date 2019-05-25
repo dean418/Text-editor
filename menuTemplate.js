@@ -1,6 +1,5 @@
-const File = require('../libs/main/file');
-
-let file = new File();
+const File = require('./libs/main/file');
+const file = new File();
 
 const menuTemplate = [
 	{
@@ -10,7 +9,7 @@ const menuTemplate = [
 			{	
 				label: 'New project folder',
 				async click() {
-					await file.createFolder();
+					await file.newProjectFolder();
 				}
 			},
 

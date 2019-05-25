@@ -1,26 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self'">
-	<link rel="stylesheet" href="style.css">
+	<meta charset='UTF-8'>
+	<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+	<meta http-equiv='X-UA-Compatible' content='ie=edge'>
+	<meta http-equiv='Content-Security-Policy' content='default-src 'self''>
+	<link rel='stylesheet' href='style.css'>
 	<title></title>
 </head>
 
 <body>
-	<div id="dirContent">
-		<div class="file">
-			<div class="icon"></div>
-			<p class="title">new project folder</p>
+	<div id='dirContent'>
+		<div class='controlMenu'>
+			<div class='new' id='fileIcon'>f</div>
+			<div class='new' id='folderIcon'>d</div>
 		</div>
+
+		<form id='nameInput'>
+			<input type='text' id='fieldName'>
+			<input type='submit' value='' hidden>
+		</form>
 	</div>
 
-	<div id="editorContainer"></div>
+	<div id='editorContainer'></div>
 
-	<script src="./src/index.js"></script>
+	<script src='./src/index.js'></script>
 </body>
 
 </html>

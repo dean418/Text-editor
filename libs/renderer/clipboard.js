@@ -1,4 +1,4 @@
-const {clipboard} = require("electron");
+const {clipboard} = require('electron');
 
 class Clipboard {
 	constructor() {
@@ -9,7 +9,7 @@ class Clipboard {
 		let availableFormats = clipboard.availableFormats();
 		let clipboardData = '';
 
-		if (availableFormats.indexOf("text/plain") > -1) {
+		if (availableFormats.indexOf('text/plain') > -1) {
 			clipboardData = clipboard.readText();
 		}
 		return clipboardData;

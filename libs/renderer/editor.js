@@ -4,7 +4,7 @@ const Cursor = require('./cursor');
 class Editor {
 
 	constructor() {
-		this.container = document.getElementById("editorContainer");
+		this.container = document.getElementById('editorContainer');
 		this.lines = [];
 		this.cursorCounter = 0;
 		this.cursor = new Cursor().cursor;
@@ -19,8 +19,8 @@ class Editor {
 		let rightLinePos = lineText.substring(this.cursorCounter, lineText.length);
 		
 		let removeSpace = /(\r\n|\n|\r|u21b5)/gm;
-		leftLinePos = leftLinePos.replace(removeSpace, "");
-		rightLinePos = rightLinePos.replace(removeSpace, "");
+		leftLinePos = leftLinePos.replace(removeSpace, '');
+		rightLinePos = rightLinePos.replace(removeSpace, '');
 
 		return {
 			left: leftLinePos,
@@ -29,8 +29,8 @@ class Editor {
 	}
 
 	updateLine() {
-		this.focusedLine.classList.add("focused");
-		this.focusedLineCpy.classList.remove("focused");
+		this.focusedLine.classList.add('focused');
+		this.focusedLineCpy.classList.remove('focused');
 	}
 
 	addLine() {
@@ -94,7 +94,7 @@ class Editor {
 		let prevLineNodes = this.focusedLineCpy.childNodes;
 
 		for (let i = 0; i < prevLineNodes.length; i++) {
-			if (prevLineNodes[i].tagName !== undefined && prevLineNodes[i].tagName == "SPAN") {
+			if (prevLineNodes[i].tagName !== undefined && prevLineNodes[i].tagName == 'SPAN') {
 				prevLineNodes[i].remove();
 			}
 		}
@@ -103,7 +103,7 @@ class Editor {
 	isOutOfView(direction) {
 		let bounding = editor.focusedLine.getBoundingClientRect();
 	
-		if (direction == "down") {
+		if (direction == 'down') {
 			if (bounding.bottom + 48 < window.innerHeight) {
 				return false;
 			} else {
@@ -116,6 +116,22 @@ class Editor {
 				return false;
 			}
 		}
+	}
+
+	handleSpace() {
+		this.linePosition = this.updatePosition();
+		this.addCursor();
+	}
+
+	handleArrowUpDown(direction) {
+		this.removePrevLineCursor(direction);
+		this.linePosition = this.updatePosition();
+		this.addCursor(this.linePosition);
+	}
+	
+	handleArrowLeftRight() {
+		this.linePosition = this.updatePosition();
+		this.addCursor(this.linePosition);
 	}
 }
 

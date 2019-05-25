@@ -1,21 +1,26 @@
-const {ipcRenderer} = require("electron");
+const {ipcRenderer} = require('electron');
 
 const Keypress = require('./libs/renderer/keypress');
 const Editor = require('./libs/renderer/editor');
 const Select = require('./libs/renderer/select');
 const UI = require('./libs/renderer/UI');
+const FS = require('./libs/renderer/FS');
 
 const editor = new Editor();
 const select = new Select(editor);
 const keypress = new Keypress(editor);
 const ui = new UI();
+const fs = new FS();
 
 editor.addCursor();
 
 let editorClicked = true;
 
-document.addEventListener("click", (event) => {
+document.addEventListener('click', (event) => {
 	editorClicked = event.path.includes(editorContainer);
+	if(!editorClicked) {
+		editor.removePrevLineCursor();
+	}
 });
 
 document.addEventListener('keydown', (event) => {
@@ -25,99 +30,99 @@ document.addEventListener('keydown', (event) => {
 
 	let key = event.key;
 	switch (key) {
-		case "Shift":
+		case 'Shift':
 			event.preventDefault();
 			break;
 
-		case "Meta":
+		case 'Meta':
 			event.preventDefault();
 			break;
 
-		case "Control":
+		case 'Control':
 			break;
 
-		case "Alt":
+		case 'Alt':
 			event.preventDefault();
 			break;
 
-		case "AltGraph":
+		case 'AltGraph':
 			break;
 
-		case "CapsLock":
+		case 'CapsLock':
 			break;
 
-		case "Enter":
+		case 'Enter':
 			editor.focusedLine.textContent = editor.linePosition.left;
 			editor.focusedLine = editor.addLine();
 			editor.focusedLine.textContent = editor.linePosition.right;
 			editor.cursorCounter = 0;
-			editor.removePrevLineCursor("down");
+			editor.removePrevLineCursor('down');
 			editor.linePosition = editor.updatePosition();
 			editor.addCursor(editor.linePosition);
 
-			if (editor.isOutOfView("down")) {
+			if (editor.isOutOfView('down')) {
 				editor.scroll();
 			}
 			break;
 
-		case "Backspace":
+		case 'Backspace':
 			keypress.backspace();
 			editor.linePosition = editor.updatePosition();
 			editor.addCursor(editor.linePosition);
 			editor.sortLineNumbers();
 			break;
 
-		case "Delete":
+		case 'Delete':
 			keypress.delete();
 			editor.linePosition = editor.updatePosition();
 			editor.addCursor();
 			editor.sortLineNumbers();
 			break;
 
-		case "Tab":
-			let tab = "\u00A0\u00A0\u00A0\u00A0";
+		case 'Tab':
+			let tab = '\u00A0\u00A0\u00A0\u00A0';
 			editor.cursorCounter += 4;
 			keypress.addSpaces(tab);
 			editor.handleSpace();
 			break;
 
-		case " ":
-			space = "\u00A0";
+		case ' ':
+			space = '\u00A0';
 			editor.cursorCounter++;
 			keypress.addSpaces(space);
 			editor.handleSpace();
 			break;
 
 			// arrows
-		case "ArrowUp":
+		case 'ArrowUp':
 			event.preventDefault();
 
 			keypress.upArrow();
 
-			if (editor.isOutOfView("up")) {
+			if (editor.isOutOfView('up')) {
 				editor.scroll(true);
 			}
 
 			editor.checkCounter();
-			editor.handleArrowUpDown("up");
+			editor.handleArrowUpDown('up');
 			break;
 
-		case "ArrowDown":
+		case 'ArrowDown':
 			event.preventDefault();
 
 			keypress.downArrow();
 
-			if (editor.isOutOfView("down")) {
+			if (editor.isOutOfView('down')) {
 				editor.scroll();
 			}
 
 			editor.checkCounter();
-			editor.handleArrowUpDown("down");
+			editor.handleArrowUpDown('down');
 			break;
 
-		case "ArrowLeft":
+		case 'ArrowLeft':
 			if (event.shiftKey && event.ctrlKey) {
-				select.selectWord("backward");
+				select.selectWord('backward');
 
 			} else if (event.shiftKey) {
 				editor.cursorCounter--;
@@ -125,14 +130,14 @@ document.addEventListener('keydown', (event) => {
 				select.selectLetterBackward();
 
 			} else if (editor.cursorCounter !== 0) {
-				select.resetOnArrowKey("left");
+				select.resetOnArrowKey('left');
 				editor.handleArrowLeftRight();
 			}
 			break;
 
-		case "ArrowRight":
+		case 'ArrowRight':
 			if (event.shiftKey && event.ctrlKey) {
-				select.selectWord("forward");
+				select.selectWord('forward');
 			} else if (event.shiftKey) {
 
 				editor.cursorCounter++;
@@ -140,12 +145,12 @@ document.addEventListener('keydown', (event) => {
 				select.selectLetterForward();
 
 			} else if (editor.cursorCounter !== editor.focusedLine.textContent.length) {
-				select.resetOnArrowKey("right");
+				select.resetOnArrowKey('right');
 				editor.handleArrowLeftRight();
 			}
 			break;
 
-		case "v":
+		case 'v':
 			if (event.ctrlKey) {
 				keypress.paste();
 			}
@@ -169,7 +174,29 @@ document.addEventListener('keydown', (event) => {
 	}
 });
 
-ipcRenderer.on("new-project-folder", (sender, path) => {
+fileIcon.onclick = (() => {
+	ui.showNameInput('file');
+});
+
+folderIcon.onclick = (() => {
+	ui.showNameInput('folder');
+});
+
+nameInput.onsubmit = (() => {
+	let name = ui.clearInput();
+
+	if(nameInput.dataset.type === 'folder') {
+		fs.newFolder(name);
+		ui.structure[name] = {}
+		ui.createFolder(name);
+	} else {
+		fs.newFile(name);
+		ui.createFile(name);
+	}
+});
+
+ipcRenderer.on('newProjectFolder', (sender, path) => {
+	ui.path = path;
 	ui.clearStructure();
-	ui.createFolder("new-project-folder");
+	ui.createFolder('new-project-folder');
 });

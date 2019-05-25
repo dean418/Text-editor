@@ -3,10 +3,9 @@ class Line {
 		this.line = this.constructLine();
 		this.prevFocusOffset = 0;
 		this.line.onclick = function () {
-			// TODO: cleanup, make cleanup method
 			let selection = window.getSelection();
 	
-			if(selection.toString() !== "") {
+			if(selection.toString() !== '') {
 				return;
 			}
 
@@ -27,15 +26,15 @@ class Line {
 
 	constructLine() {
 		// create elements for editor line
-		let line = document.createElement("div");
-		let rowContent = document.createElement("div");
-		let rowNum = document.createElement("div");
+		let line = document.createElement('div');
+		let rowContent = document.createElement('div');
+		let rowNum = document.createElement('div');
 
 		// assign classes to editor line
-		line.classList.add("line");
+		line.classList.add('line');
 		line.id = 1;
-		rowNum.classList.add("rowNum");
-		rowContent.classList.add("rowContent", "focused");
+		rowNum.classList.add('rowNum');
+		rowContent.classList.add('rowContent', 'focused');
 
 		// construct line
 		line.appendChild(rowNum);

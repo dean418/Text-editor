@@ -1,7 +1,6 @@
 const {dialog, webContents} = require('electron');
 const fs = require('fs');
 
-
 class File {
 	constructor() {
 	}
@@ -15,12 +14,21 @@ class File {
 		})	
 	}
 
-	async createFolder() {
+	async newProjectFolder() {
 		let projectPath = await this.getFolder();
-		fs.mkdir(projectPath + "/new-project-folder", (err) => {
+		fs.mkdir(projectPath + '/new-project-folder', (err) => {
 			if (err) throw err
 		});
-		webContents.getAllWebContents()[1].send("new-project-folder", projectPath + "/new-project-folder");
+		webContents.getAllWebContents()[1].send('newProjectFolder', projectPath + '/new-project-folder');
+	}
+
+	createFile(name) {
+		console.log('creating new file')
+		//create file at current path
+	}
+
+	createFolder(name) {
+		console.log('creating new folder')
 	}
 }
 

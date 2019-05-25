@@ -6,13 +6,13 @@ class Keypress {
 	}
 
 	backspace() {
-		if (editor.linePosition.left == "" && editor.focusedLine.parentElement.id != 1) {
+		if (editor.linePosition.left == '' && editor.focusedLine.parentElement.id != 1) {
 			this.removeLine();
 			editor.cursorCounter = editor.focusedLine.textContent.length;
 			editor.focusedLine.textContent += editor.linePosition.right;
 		} else {
 			editor.focusedLine.textContent = editor.linePosition.left.substr(0, editor.linePosition.left.length - 1) + editor.linePosition.right;
-			if(editor.linePosition.left !== ""){
+			if(editor.linePosition.left !== ''){
 				editor.cursorCounter--;
 			}
 		}
@@ -20,7 +20,7 @@ class Keypress {
 
 	delete() {
 		let parentElement = editor.focusedLine.parentElement.id
-		if (editor.linePosition.right == "" && parentElement != editor.lines.length) {
+		if (editor.linePosition.right == '' && parentElement != editor.lines.length) {
 			let lineContent = editor.lines[parentElement].childNodes[1].textContent;
 			this.removeLine(true);
 			editor.cursorCounter = editor.focusedLine.textContent.length;
@@ -49,7 +49,7 @@ class Keypress {
 
 	upArrow() {
 		let lineNum = editor.focusedLine.parentElement.id;
-		if (lineNum !== "1") {
+		if (lineNum !== '1') {
 			let prevLine = lineNum - 1;
 			editor.focusedLine = editor.lines[prevLine - 1].childNodes[1]
 		}
@@ -83,7 +83,7 @@ class Keypress {
 			} else {
 				editor.updateLine();
 				editor.focusedLine = editor.addLine();
-				editor.removePrevLineCursor("down");
+				editor.removePrevLineCursor('down');
 				editor.focusedLine.textContent += line;
 			}
 		}
