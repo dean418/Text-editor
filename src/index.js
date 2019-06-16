@@ -4,13 +4,13 @@ const Keypress = require('./libs/renderer/keypress');
 const Editor = require('./libs/renderer/editor');
 const Select = require('./libs/renderer/select');
 const UI = require('./libs/renderer/UI');
-const FS = require('./libs/renderer/FS');
+const Command = require('./libs/renderer/command');
 
 const editor = new Editor();
 const select = new Select(editor);
 const keypress = new Keypress(editor);
 const ui = new UI();
-const fs = new FS();
+const command = new Command(ui);
 
 editor.addCursor();
 
@@ -186,17 +186,12 @@ nameInput.onsubmit = (() => {
 	let name = ui.clearInput();
 
 	if(nameInput.dataset.type === 'folder') {
-		fs.newFolder(name);
-		ui.structure[name] = {}
-		ui.createFolder(name);
+		command.newFolder(name);
 	} else {
-		fs.newFile(name);
-		ui.createFile(name);
+		command.newFile(name);
 	}
 });
 
 ipcRenderer.on('newProjectFolder', (sender, path) => {
-	ui.path = path;
-	ui.clearStructure();
-	ui.createFolder('new-project-folder');
+	command.newProjectFolder(path);
 });
