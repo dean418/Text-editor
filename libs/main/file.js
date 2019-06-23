@@ -16,9 +16,9 @@ class File {
 
 	async newProjectFolder() {
 		let projectPath = await this.getFolder();
-		fs.mkdir(projectPath + '/new-project-folder', (err) => {
-			if (err) throw err
-		});
+		// fs.mkdir(projectPath + '/new-project-folder', (err) => {
+		// 	if (err) throw err
+		// });
 		webContents.getAllWebContents()[1].send('newProjectFolder', projectPath + '/new-project-folder');
 	}
 

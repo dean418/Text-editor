@@ -1,7 +1,7 @@
 class UI {
 	constructor() {
 		this.path = '';
-		this.structure = {};
+		this.structure;
 		this.focused;
 		this.dirContent = document.getElementById('dirContent');
 	}
@@ -12,10 +12,18 @@ class UI {
 		}
 	}
 
-	createTemplate(name, path) {
-		let file = document.createElement('div');
+	createTemplate(name, isFile, isProjectFolder) {
+		let file;
 		let icon = document.createElement('div');
 		let title = document.createElement('div');
+
+		if(isFile || isProjectFolder) {
+			file = document.createElement('li');
+			file.setAttribute('data-path', this.focused)
+		} else {
+			file = document.createElement('ul');
+			file.setAttribute('data-path', this.focused + '/' + name)
+		}
 
 		file.classList.add('file');
 		icon.classList.add('icon');
@@ -26,21 +34,20 @@ class UI {
 		file.appendChild(icon);
 		file.appendChild(title);
 
-		file.setAttribute('data-path', path)
-
 		return file;
 	}
 
-	createFolder(name) {
-		let folder = this.createTemplate(name, this.focused);
-		folder.onclick = this.setFocused.bind(this, [folder, name, false]);
+	createFolder(name, isProjectFolder, FSObject) {
+		let folder = this.createTemplate(name, false, isProjectFolder);
+		folder.onclick = this.setFocused.bind(this, [FSObject]);
 		dirContent.appendChild(folder);
 	}
 
-	createFile(name) {
-		let file = this.createTemplate(name, this.focused);
-		file.onclick = this.setFocused.bind(this, [file, name, true]);
-		dirContent.appendChild(file)
+	createFile(name, FSObject) {
+
+		let file = this.createTemplate(name, true);
+		file.onclick = this.setFocused.bind(this, [FSObject]);
+		dirContent.appendChild(file);
 	}
 
 	showNameInput(type) {
@@ -60,18 +67,8 @@ class UI {
 		return name;
 	}
 
-	setFocused(file) {
-		let path = file[0].dataset.path;
-		let name = file[1];
-		let isFile = file[2];
-
-		path = path + "/" + name;
-		if(isFile) {
-			// set the focused property to the files parent
-			path = path.substr(0, path.lastIndexOf('/'));
-			
-		}
-		this.focused = path;
+	setFocused(FSObject) {
+		this.focused = FSObject[0];
 	}
 }
 
